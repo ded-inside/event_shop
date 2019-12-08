@@ -30,9 +30,9 @@ class User(TimestampMixin, db.Model):
                                     foreign_keys="Event.buyer_id")
 
 
-    transaction_buyer = db.relationship("Transaction", backref="_from", lazy="dynamic",
+    transactions_buyer = db.relationship("Transaction", backref="_from", lazy="dynamic",
                                         foreign_keys="Transaction._from_id")
-    transaction_seller = db.relationship("Transaction", backref="_to", lazy="dynamic",
+    transactions_seller = db.relationship("Transaction", backref="_to", lazy="dynamic",
                                          foreign_keys="Transaction._to_id")
 
 
