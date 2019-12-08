@@ -23,21 +23,17 @@ class User(TimestampMixin, db.Model):
     last_name = db.Column(db.String(64))
     about = db.Column(db.Text, nullable=True)
 
-
     events_host = db.relationship("Event", backref="seller", lazy="dynamic",
                                   foreign_keys="Event.seller_id")
     events_attend = db.relationship("Event", backref="buyer", lazy="dynamic",
                                     foreign_keys="Event.buyer_id")
 
-
     transactions_buyer = db.relationship("Transaction", backref="_from", lazy="dynamic",
-                                        foreign_keys="Transaction._from_id")
+                                         foreign_keys="Transaction._from_id")
     transactions_seller = db.relationship("Transaction", backref="_to", lazy="dynamic",
-                                         foreign_keys="Transaction._to_id")
-
+                                          foreign_keys="Transaction._to_id")
 
     certificates = db.relationship("Certificate", backref="owner", lazy="dynamic")
-
 
     def __repr__(self):
         return f"<User@{self.id} {self.username}>"
@@ -48,10 +44,8 @@ class Event(TimestampMixin, db.Model):
     title = db.Column(db.String(64), nullable=False)
     about = db.Column(db.Text)
 
-
     seller_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     buyer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
 
     time_start = db.Column(db.DateTime)
     time_end = db.Column(db.DateTime)
@@ -74,10 +68,8 @@ class Certificate(db.Model):
 class Transaction(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-
     _from_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     _to_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
 
     certificates = db.relationship(
         "Certificate",
@@ -87,10 +79,8 @@ class Transaction(TimestampMixin, db.Model):
         backref=db.backref("transactions", lazy="dynamic"), lazy="dynamic"
     )
 
-
     def __repr__(self):
         return f"<Transaction@{self.id} {self._from} -> {self._to}>"
-
 
     def amount(self):
         return self.certificates.count()
