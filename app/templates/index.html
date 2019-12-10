@@ -1,0 +1,16 @@
+{% import 'macro.html' as macro %}
+
+{% extends 'base.html' %}
+
+{% block title %}Клуб занятых людей{% endblock %}
+
+{% block content %}
+	<div class="products-catagories-area clearfix">
+		<div class="amado-pro-catagory clearfix">
+			{% for user in users %}
+				{{ macro.card_man(user) }}
+			{% else %}
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

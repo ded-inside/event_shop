@@ -1,7 +1,8 @@
 from app import app
+from flask import render_template
 
 
-@app.route('/')
+@app.route('/', endpoint='index-clear')
 @app.route("/index")
 def index():
-    return "Hello fucking World!"
+    return render_template('index.html')
