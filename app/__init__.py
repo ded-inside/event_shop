@@ -1,4 +1,6 @@
 from flask import Flask
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -12,9 +14,15 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 
+from app import models
+admin = Admin(app, name='microblog', template_mode='bootstrap3')
+admin.add_view(ModelView(models.User, db.session))
+admin.add_view(ModelView(models.Event, db.session))
+admin.add_view(ModelView(models.Transaction, db.session))
+admin.add_view(ModelView(models.Certificate, db.session))
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
-from app import routes, models
+from app import routes
 
 
 def generate_default_state():
@@ -57,5 +65,3 @@ def generate_default_state():
     print(u2)
     print(event)
 
-
-generate_default_state()
