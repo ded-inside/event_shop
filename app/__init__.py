@@ -20,7 +20,7 @@ admin.add_view(ModelView(models.User, db.session))
 admin.add_view(ModelView(models.Event, db.session))
 admin.add_view(ModelView(models.Transaction, db.session))
 admin.add_view(ModelView(models.Certificate, db.session))
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 from app import routes
 
