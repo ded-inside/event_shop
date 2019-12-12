@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    {{ event.title }}<br>
+    {{ event.time_start }}<br>
+    {{ event.time_end }}<br>
+    {{ event.about }}<br>
+    {{ event.seller }}<br>
+    {% if event.buyer %}
+        This event already bought :(
+    {% endif %}
+{% endblock %}

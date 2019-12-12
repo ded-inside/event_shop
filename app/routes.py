@@ -1,17 +1,32 @@
-from flask_login import login_user, current_user, login_required
+from flask_login import login_user, current_user, login_required, logout_user
+from sqlalchemy.orm import joinedload
 
 from app import app, ALLOWED_EXTENSIONS
 from flask import request, flash, redirect, url_for, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 import os
 
-from app.forms import LoginForm, RegisterForm, UserEditForm
+from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm
 from app.models import *
 
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/')
+@app.route("/index")
+def index():
+    events = Event.query.filter_by(buyer=None).order_by(Event.time_edited).all()
+    return render_template("index.html", events=events)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -57,12 +72,9 @@ def register():
 
 
 @app.route('/uploads/<filename>')
-@login_required
 def uploaded_file(filename):
-    print(app.config['UPLOAD_FOLDER'], filename)
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
-
 
 
 @app.route("/edit/user", methods=["GET", "POST"])
@@ -76,67 +88,95 @@ def user_edit():
             current_user.last_name = form.last_name.data
         if form.profile_picture.data:
             if allowed_file(form.profile_picture.data.filename):
-
                 image_data = request.files[form.profile_picture.name].read()
                 filename = secure_filename(form.profile_picture.data.filename)
-                open(os.path.join(app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename), 'wb').write(image_data)
+
+                open(os.path.join(os.getcwd(), "app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename),
+                     'wb').write(image_data)
                 current_user.profile_pic_filename = filename
                 db.session.commit()
                 return redirect(url_for('user_page',
                                         username=current_user.username))
 
-
     return render_template("edit_user.html", form=form)
-
-
-def add_event():
-    pass
 
 
 @app.route("/user/<username>")
 def user_page(username: str):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('profile.html', active='prof')
+    user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
+    return render_template("user.html", user=user)
 
 
-@app.route('/upload_file', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+@app.route("/users")
+def users():
+    _users = User.query.options(joinedload("events_host")).all()
+    return render_template("users.html", users=_users)
 
 
-@app.route('/', endpoint='index_clr')
-@app.route("/index")
-def index():
-    users = User.query.all()
-    return render_template("index.html", active='main', users=users)
+@app.route("/event/id/<event_id>")
+def event_page(event_id: int):
+    event = Event.query.get_or_404(event_id)
+    return render_template("event.html", event=event)
 
 
-@app.route('/dbg/profile')
-def dbg_profile():
-	user = {'username': 'Alice'
-	}
-	return render_template('profile.html', user=user)
+@app.route("/event/add", methods=["GET", "POST"])
+@login_required
+def event_add():
+    form = EventForm()
+
+    if form.validate_on_submit():
+        event = Event(
+            title=form.title.data,
+            about=form.about.data,
+            price=form.price.data,
+            time_start=form.time_start.data,
+            time_end=form.time_end.data,
+            time_created=datetime.utcnow(),
+            time_edited=datetime.utcnow()
+        )
+        current_user.events_host.append(event)
+        db.session.commit()
+        return redirect(url_for("users"))
+    return render_template("event_add.html", form=form)
+
+
+@app.route("/buy/event/<event_id>")
+@login_required
+def event_buy(event_id: int):
+    event = Event.query.get_or_404(event_id)
+    seller = event.seller
+    buyer: User = User.query.get(current_user.id)
+    if event.buyer:
+        return redirect(url_for("user_page", username=seller.username))
+    if buyer == seller:
+        flash("U cant buy your event")
+        return redirect(url_for("user_page", username=current_user.username))
+    if buyer.balance() < event.price:
+        flash("U dont have enough certs")
+        return redirect(url_for("user_page", username=current_user.username))
+
+    transaction = Transaction()
+    remains = event.price
+    cert: Certificate
+    for cert in buyer.certificates:
+        if remains == 0:
+            break
+        cert.owner = seller
+        transaction.certificates.append(cert)
+        remains -= 1
+    event.buyer = buyer
+    transaction._to = seller
+    transaction._from = buyer
+
+    db.session.add(transaction)
+    db.session.commit()
+    return redirect(url_for("index"))
+
+
+@app.route("/transactions")
+@login_required
+def transactions():
+    trns_buyer = current_user.transactions_buyer
+    trns_seller = current_user.transactions_seller
+
+    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller)

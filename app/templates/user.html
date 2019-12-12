@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <p>{{  user.full_name() }}</p>
+    <img src="{{  user.profile_pic_url() }}" alt="Smiley face" height="42" width="42">
+    {% for event in user.available_events() %}
+        {{ event.title }}
+        {{ event.price }}
+        <a href="{{ url_for("event_buy", event_id=event.id) }}">buy me!</a>
+    {% endfor %}
+    {% if current_user == user  %}
+        balance: {{ user.balance() }}
+
+        {% for event in current_user.events_attend %}
+            {{ event.title }}
+            {{ event.time_start }}
+            {{ event.time_end }}
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

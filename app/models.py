@@ -1,11 +1,10 @@
 from datetime import datetime
 
-from flask import send_from_directory, url_for
+from flask import url_for
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-from app import db, app, login
+from app import db, login
 
 transaction_certificate = db.Table("transaction_certificate",
                                    db.Column("transaction_id", db.Integer, db.ForeignKey("transaction.id")),
@@ -42,18 +41,26 @@ class User(UserMixin, TimestampMixin, db.Model):
 
     job = db.Column(db.String, nullable=True)
 
-    events_host = db.relationship("Event", backref="seller", lazy="dynamic",
+    events_host = db.relationship("Event", backref="seller",
                                   foreign_keys="Event.seller_id")
-    events_attend = db.relationship("Event", backref="buyer", lazy="dynamic",
+
+
+    def available_events(self):
+        return list(filter(lambda x: x.buyer is None, self.events_host))
+
+
+    events_attend = db.relationship("Event", backref="buyer",
                                     foreign_keys="Event.buyer_id")
 
-    transactions_buyer = db.relationship("Transaction", backref="_from", lazy="dynamic",
+    transactions_buyer = db.relationship("Transaction", backref="_from",
                                          foreign_keys="Transaction._from_id")
-    transactions_seller = db.relationship("Transaction", backref="_to", lazy="dynamic",
+    transactions_seller = db.relationship("Transaction", backref="_to",
                                           foreign_keys="Transaction._to_id")
 
     certificates = db.relationship("Certificate", backref="owner", lazy="dynamic")
 
+    def balance(self):
+        return self.certificates.count()
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -78,7 +85,7 @@ class Event(TimestampMixin, db.Model):
     time_start = db.Column(db.DateTime)
     time_end = db.Column(db.DateTime)
 
-    cost = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False, default=0)
 
     def __repr__(self):
         return f"<Event@{self.id} {self.title}>"
@@ -103,15 +110,15 @@ class Transaction(TimestampMixin, db.Model):
         "Certificate",
         secondary=transaction_certificate,
         primaryjoin=(transaction_certificate.c.transaction_id == id),
-        secondaryjoin=(transaction_certificate.c.transaction_id == id),
-        backref=db.backref("transactions", lazy="dynamic"), lazy="dynamic"
+        # secondaryjoin=(transaction_certificate.c.transaction_id == id),
+        backref=db.backref("transactions")
     )
 
     def __repr__(self):
         return f"<Transaction@{self.id} {self._from} -> {self._to}>"
 
     def amount(self):
-        return self.certificates.count()
+        return len(self.certificates)
 
 
 @login.user_loader

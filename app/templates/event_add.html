@@ -1,0 +1,31 @@
+{% extends "base.html"  %}
+
+{% block app_content %}
+    <h1>Sign Up</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.title.label }}<br>
+            {{ form.title(size=32) }}
+        </p>
+        <p>
+            {{ form.about.label }}<br>
+            {{ form.about }}
+        </p>
+        <p>
+            {{ form.price.label }}<br>
+            {{ form.price }}
+        </p>
+        <p>
+            {{ form.time_start.label }}<br>
+            {{ form.time_start(type="datetime-local") }}
+        </p>
+        <p>
+            {{ form.time_end.label }}<br>
+            {{ form.time_end(type="datetime-local") }}
+        </p>
+
+
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
