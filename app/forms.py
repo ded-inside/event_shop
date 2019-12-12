@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import *
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, FileField
+from wtforms.fields.html5 import DateTimeField, IntegerField, DateField
 from wtforms.validators import *
 
 
@@ -33,3 +34,17 @@ class UserEditForm(FlaskForm):
     profile_picture = FileField("Profile picture")
 
     submit = SubmitField("Update")
+
+
+class EventForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired(), Length(min=3, max=64)])
+    about = TextAreaField("About")
+
+    time_start = DateTimeField("Begins", validators=[DataRequired()])
+    time_end = DateTimeField("Ends", validators=[DataRequired()])
+
+    test_date = DateField("ababa")
+
+    price = IntegerField("Cost", validators=[NumberRange(min=1)])
+
+    submit = SubmitField("Add")

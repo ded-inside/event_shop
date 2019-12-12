@@ -1,11 +1,10 @@
 from datetime import datetime
 
-from flask import send_from_directory, url_for
+from flask import url_for
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-from app import db, app, login
+from app import db, login
 
 transaction_certificate = db.Table("transaction_certificate",
                                    db.Column("transaction_id", db.Integer, db.ForeignKey("transaction.id")),
@@ -78,7 +77,7 @@ class Event(TimestampMixin, db.Model):
     time_start = db.Column(db.DateTime)
     time_end = db.Column(db.DateTime)
 
-    cost = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False, default=0)
 
     def __repr__(self):
         return f"<Event@{self.id} {self.title}>"

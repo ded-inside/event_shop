@@ -2,12 +2,14 @@
 
 {% block content %}
 
-    {% for user in _users %}
+    {% for user in users %}
+        <div>
         {{ user.full_name() }}
         {% for event in user.events_host %}
             {{ event.title }}
             {{ event.price }}
         {% endfor %}
+        </div>
     {% endfor %}
 
 {% endblock %}

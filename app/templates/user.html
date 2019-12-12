@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hello, {{ user.full_name() }}</h1>
+    <p>{{  user.full_name() }}</p>
+    <img src="{{  user.profile_pic_url() }}" alt="Smiley face" height="42" width="42">
     {% for event in user.events_host %}
+        {{ event.title }}
         {{ event.price }}
     {% endfor %}
+
 {% endblock %}

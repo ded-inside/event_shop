@@ -6,7 +6,7 @@ from flask import request, flash, redirect, url_for, send_from_directory, render
 from werkzeug.utils import secure_filename
 import os
 
-from app.forms import LoginForm, RegisterForm, UserEditForm
+from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm
 from app.models import *
 
 
@@ -58,10 +58,8 @@ def register():
 
 
 @app.route('/uploads/<filename>')
-@login_required
 def uploaded_file(filename):
-    print(app.config['UPLOAD_FOLDER'], filename)
-    return send_from_directory("../" + app.config['UPLOAD_FOLDER'],
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
 
@@ -80,7 +78,8 @@ def user_edit():
 
                 image_data = request.files[form.profile_picture.name].read()
                 filename = secure_filename(form.profile_picture.data.filename)
-                open(os.path.join(app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename), 'wb').write(image_data)
+
+                open(os.path.join(os.getcwd(),"app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename), 'wb').write(image_data)
                 current_user.profile_pic_filename = filename
                 db.session.commit()
                 return redirect(url_for('user_page',
@@ -90,56 +89,38 @@ def user_edit():
     return render_template("edit_user.html", form=form)
 
 
-def add_event():
-    pass
-
-
 @app.route("/user/<username>")
 def user_page(username: str):
-    user = User.query.filter_by(username=username).first_or_404()
-    return f'''
-    <html>
-    <body>
-    <p>{user.full_name()}</p>
-    <img src="{user.profile_pic_url()}" alt="Smiley face" height="42" width="42">
-    </body>
-    </html>
-    '''
-
-
-@app.route('/upload_file', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+    user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
+    return render_template("user.html", user=user)
 
 
 @app.route("/users")
 def users():
     _users = User.query.options(joinedload("events_host")).all()
     return render_template("users.html", users=_users)
+
+
+
+@app.route("/event/add", methods=["GET", "POST"])
+@login_required
+def event_add():
+    form = EventForm()
+
+    if form.validate_on_submit():
+        event = Event(
+            title=form.title.data,
+            about=form.about.data,
+            price=form.price.data,
+            time_start=form.time_start.data,
+            time_end=form.time_end.data,
+            time_created=datetime.utcnow(),
+            time_edited=datetime.utcnow()
+        )
+        current_user.events_host.append(event)
+        db.session.commit()
+        return redirect(url_for("users"))
+    return render_template("event_add.html", form=form)
 
 
 @app.route('/')
