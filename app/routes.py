@@ -11,11 +11,30 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+@app.route('/', endpoint='index-clear')
+@app.route("/index")
+def index():
+	users = User.query.all()
+	return render_template('index.html', users=users)
+
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     print(app.config['UPLOAD_FOLDER'], filename)
-    return send_from_directory("../"+app.config['UPLOAD_FOLDER'],
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
+
+
+# Deubg
+@app.route('/user/add/<name>/<password>')
+def user_add(name:str, password:str):
+	u = User(username=name)
+	u.set_password(password)
+
+	db.session.add(u)
+	db.session.commit()
+
+	return 'ok'
 
 
 @app.route("/user/<username>")
@@ -58,8 +77,3 @@ def upload_file():
       <input type=submit value=Upload>
     </form>
     '''
-
-@app.route('/', endpoint='index-clear')
-@app.route("/index")
-def index():
-    return render_template('index.html')

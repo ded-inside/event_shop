@@ -26,7 +26,7 @@ class User(TimestampMixin, db.Model):
     profile_pic_filename = db.Column(db.String())
 
     def profile_pic_url(self):
-        return url_for("uploaded_file", filename=self.profile_pic_filename)
+        return url_for("uploaded_file", filename=(self.profile_pic_filename if self.profile_pic_filename else 'logo.png'))
 
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
