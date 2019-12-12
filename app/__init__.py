@@ -1,12 +1,11 @@
-from flask import Flask
-from flask_admin import Admin
+from flask import Flask, redirect, url_for
+from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 
 from config import Config
-
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,7 +14,25 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 
 from app import models
-admin = Admin(app, name='microblog', template_mode='bootstrap3')
+
+
+class MyModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.username == "Admin"
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("index"))
+
+
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.username == "Admin"
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("index"))
+
+
+admin = Admin(app, index_view=MyAdminIndexView())
 admin.add_view(ModelView(models.User, db.session))
 admin.add_view(ModelView(models.Event, db.session))
 admin.add_view(ModelView(models.Transaction, db.session))
@@ -64,4 +81,3 @@ def generate_default_state():
     print(u1)
     print(u2)
     print(event)
-
