@@ -48,11 +48,11 @@
 			<!-- Amado Nav -->
 			<nav class="amado-nav">
 				<ul>
-					<li class="active"><a href="{{ url_for('index') }}">Home</a></li>
-					<li><a href="shop.html">Shop</a></li>
-					<li><a href="product-details.html">Product</a></li>
-					<li><a href="cart.html">Cart</a></li>
-					<li><a href="checkout.html">Checkout</a></li>
+					<li {% if active == 'main' %} class="active" {% endif %}><a href="{{ url_for('index') }}">Главная</a></li>
+					<li {% if active == 'login' %} class="active" {% endif %}><a href="#">Логин</a></li>
+					<li {% if active == 'aaaaa' %} class="active" {% endif %}><a href="#">ААААА</a></li>
+					<!-- TODO -->
+					<li {% if active == 'prof' %} class="active" {% endif %}><a href="{{ url_for('user_page', username='Alice') }}">Личный кабинет</a></li>
 				</ul>
 			</nav>
 			<!-- Button Group -->

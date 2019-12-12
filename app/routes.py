@@ -96,14 +96,7 @@ def add_event():
 @app.route("/user/<username>")
 def user_page(username: str):
     user = User.query.filter_by(username=username).first_or_404()
-    return f'''
-    <html>
-    <body>
-    <p>{user.full_name()}</p>
-    <img src="{user.profile_pic_url()}" alt="Smiley face" height="42" width="42">
-    </body>
-    </html>
-    '''
+    return render_template('profile.html', active='prof')
 
 
 @app.route('/upload_file', methods=['GET', 'POST'])
@@ -135,8 +128,15 @@ def upload_file():
     '''
 
 
-@app.route('/')
+@app.route('/', endpoint='index_clr')
 @app.route("/index")
 def index():
-    events = Event.query.order_by(Event.time_edited).all()
-    return render_template("index.html", events=events)
+    users = User.query.all()
+    return render_template("index.html", active='main', users=users)
+
+
+@app.route('/dbg/profile')
+def dbg_profile():
+	user = {'username': 'Alice'
+	}
+	return render_template('profile.html', user=user)

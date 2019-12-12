@@ -1,6 +1,6 @@
 {% macro card_man(user) %}
     <div class="card-man">
-        <a href="{{ user.profile }}">
+        <a href="{{ url_for('user_page', username=user.username) }}">
             <img src="{{ user.profile_pic_url() }}" alt="">
             <div class="hover-content">
                 <div class="line"></div>
