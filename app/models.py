@@ -42,9 +42,9 @@ class User(UserMixin, TimestampMixin, db.Model):
 
     job = db.Column(db.String, nullable=True)
 
-    events_host = db.relationship("Event", backref="seller", lazy="dynamic",
+    events_host = db.relationship("Event", backref="seller",
                                   foreign_keys="Event.seller_id")
-    events_attend = db.relationship("Event", backref="buyer", lazy="dynamic",
+    events_attend = db.relationship("Event", backref="buyer",
                                     foreign_keys="Event.buyer_id")
 
     transactions_buyer = db.relationship("Transaction", backref="_from", lazy="dynamic",
