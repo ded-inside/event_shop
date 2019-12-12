@@ -1,4 +1,5 @@
 from flask_login import login_user, current_user, login_required
+from sqlalchemy.orm import joinedload
 
 from app import app, ALLOWED_EXTENSIONS
 from flask import request, flash, redirect, url_for, send_from_directory, render_template
@@ -133,6 +134,12 @@ def upload_file():
       <input type=submit value=Upload>
     </form>
     '''
+
+
+@app.route("/users")
+def users():
+    _users = User.query.options(joinedload("events_host")).all()
+    return render_template("users.html", users=_users)
 
 
 @app.route('/')

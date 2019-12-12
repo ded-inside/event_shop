@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% for user in _users %}
+        {{ user.full_name() }}
+        {% for event in user.events_host %}
+            {{ event.title }}
+            {{ event.price }}
+        {% endfor %}
+    {% endfor %}
+
+{% endblock %}
