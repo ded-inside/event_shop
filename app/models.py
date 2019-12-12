@@ -43,6 +43,12 @@ class User(UserMixin, TimestampMixin, db.Model):
 
     events_host = db.relationship("Event", backref="seller",
                                   foreign_keys="Event.seller_id")
+
+
+    def available_events(self):
+        return list(filter(lambda x: x.buyer is None, self.events_host))
+
+
     events_attend = db.relationship("Event", backref="buyer",
                                     foreign_keys="Event.buyer_id")
 
@@ -53,6 +59,8 @@ class User(UserMixin, TimestampMixin, db.Model):
 
     certificates = db.relationship("Certificate", backref="owner", lazy="dynamic")
 
+    def balance(self):
+        return self.certificates.count()
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -1,4 +1,4 @@
-from flask_login import login_user, current_user, login_required
+from flask_login import login_user, current_user, login_required, logout_user
 from sqlalchemy.orm import joinedload
 
 from app import app, ALLOWED_EXTENSIONS
@@ -13,6 +13,22 @@ from app.models import *
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
+@app.route('/')
+@app.route("/index")
+def index():
+    events = Event.query.filter_by(buyer=None).order_by(Event.time_edited).all()
+    return render_template("index.html", events=events)
+
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -123,8 +139,30 @@ def event_add():
     return render_template("event_add.html", form=form)
 
 
-@app.route('/')
-@app.route("/index")
-def index():
-    events = Event.query.order_by(Event.time_edited).all()
-    return render_template("index.html", events=events)
+@app.route("/buy/event/<event_id>")
+@login_required
+def event_buy(event_id: int):
+    event = Event.query.get_or_404(event_id)
+    seller = event.seller
+    if event.buyer:
+        return redirect(url_for("user_page", username=seller.username))
+    if current_user == seller:
+        flash("U cant buy your event")
+        return redirect(url_for("user_page", username=current_user.username))
+    if current_user.balance() < event.price:
+        flash("U dont have enough certs")
+        return redirect(url_for("user_page", username=current_user.username))
+
+    cert: Certificate
+    # transaction = Transaction()
+    remains = event.price
+    for cert in current_user.certificates:
+        if remains == 0:
+            break
+        cert.owner = seller
+        # transaction.certificates.append(cert)
+        remains -= 1
+    event.buyer = current_user
+    # db.session.add(Transaction)
+    db.session.commit()
+    return redirect(url_for("index"))
