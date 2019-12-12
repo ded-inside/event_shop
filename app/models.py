@@ -1,10 +1,11 @@
 from datetime import datetime
 
 from flask import send_from_directory, url_for
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-from app import db, app
+from app import db, app, login
 
 transaction_certificate = db.Table("transaction_certificate",
                                    db.Column("transaction_id", db.Integer, db.ForeignKey("transaction.id")),
@@ -17,7 +18,7 @@ class TimestampMixin:
     time_edited = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-class User(TimestampMixin, db.Model):
+class User(UserMixin, TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -26,7 +27,10 @@ class User(TimestampMixin, db.Model):
     profile_pic_filename = db.Column(db.String())
 
     def profile_pic_url(self):
-        return url_for("uploaded_file", filename=(self.profile_pic_filename if self.profile_pic_filename else 'logo.png'))
+        fname = "logo.jpg"
+        if self.profile_pic_filename:
+            fname = self.profile_pic_filename
+        return url_for("uploaded_file", filename=fname)
 
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
@@ -108,3 +112,8 @@ class Transaction(TimestampMixin, db.Model):
 
     def amount(self):
         return self.certificates.count()
+
+
+@login.user_loader
+def load_user(_id):
+    return User.query.get(int(_id))
