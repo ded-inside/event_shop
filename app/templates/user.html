@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
     <p>{{  user.full_name() }}</p>
     <img src="{{  user.profile_pic_url() }}" alt="Smiley face" height="42" width="42">
     {% for event in user.available_events() %}

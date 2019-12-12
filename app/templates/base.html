@@ -1,34 +1,64 @@
-<html>
-    <head>
-      {% if title %}
-      <title>{{ title }} - Microblog</title>
-      {% else %}
-      <title>Welcome to Microblog</title>
-      {% endif %}
-    </head>
-    <body>
-    {% if current_user.is_authenticated %}
-        <a href="{{ url_for("logout") }}">logout</a>
-    {% else %}
-        <a href="{{ url_for("login") }}">Login</a>
-        <a href="{{ url_for("register") }}">Register</a>
-    {% endif %}
-    {% if current_user.is_authenticated %}
-        <a href="{{ url_for("user_page", username=current_user.username) }}">Profile</a>
-        <a href="{{ url_for("event_add") }}">Add Event</a>
-    {% endif %}
+{#{% extends "bootstrap/base.html" %}#}
+{##}
+{##}
+{#    {% block title %}#}
+{#      {% if title %}#}
+{#      <title>{{ title }} - Microblog</title>#}
+{#      {% else %}#}
+{#      <title>Welcome to Microblog</title>#}
+{#      {% endif %}#}
+{#    {% endblock %}#}
+{##}
+{#    {% block content %}#}
+{#
+{#            {% with messages = get_flashed_messages() %}#}
+{#              {% if messages %}#}
+{#                <ul class=flashes>#}
+{#                {% for message in messages %}#}
+{#                  <li>{{ message }}</li>#}
+{#                {% endfor %}#}
+{#                </ul>#}
+{#              {% endif %}#}
+{#            {% endwith %}#}
+{#        {% block body %}{% endblock %}#}
+{#        <div>Microblog: <a href="/">Home</a></div>#}
+{#        <hr>#}
+{#        {% block app_content %}#}
+{#        {% endblock %}#}
+{#    {% endblock %}#}
+
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    {% if title %}{{ title }} - Microblog{% else %}Welcome to Microblog{% endif %}
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for("logout") }}" class="navbar-link">logout</a>
+        {% else %}
+            <a href="{{ url_for("login") }}"  class="navbar-btn" >Login</a>
+            <a href="{{ url_for("register") }}" class="navbar-btn">Register</a>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for("user_page", username=current_user.username) }}">Profile</a>
+            <a href="{{ url_for("event_add") }}">Add Event</a>
+        {% endif %}
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
         {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <ul class=flashes>
+        {% if messages %}
             {% for message in messages %}
-              <li>{{ message }}</li>
+            <div class="alert alert-info" role="alert">{{ message }}</div>
             {% endfor %}
-            </ul>
-          {% endif %}
+        {% endif %}
         {% endwith %}
-{% block body %}{% endblock %}
-        <div>Microblog: <a href="/">Home</a></div>
-        <hr>
-        {% block content %}{% endblock %}
-    </body>
-</html>
+
+        {% block app_content %}
+        {% endblock %}
+    </div>
+{% endblock %}

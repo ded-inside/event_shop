@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>Sell</h1>
+    <ul>
+        {% for trns in trns_seller %}
+            <li>
+                {{ trns.time_created }}<br>
+                {{ trns._from }}<br>
+                {{ trns.amount() }}
+            </li>
+        {% endfor %}
+    </ul>
+    <h1>Buy</h1>
+    <ul>
+        {% for trns in trns_buyer %}
+            <li>
+                {{ trns.time_created }}<br>
+                {{ trns._to }}<br>
+                {{ trns.amount() }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
