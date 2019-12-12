@@ -180,3 +180,8 @@ def transactions():
     trns_seller = current_user.transactions_seller
 
     return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller)
+
+
+@app.route('/dbg/profile')
+def dbg_profile():
+	return render_template('profile.html')
