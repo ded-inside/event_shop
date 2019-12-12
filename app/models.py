@@ -52,9 +52,9 @@ class User(UserMixin, TimestampMixin, db.Model):
     events_attend = db.relationship("Event", backref="buyer",
                                     foreign_keys="Event.buyer_id")
 
-    transactions_buyer = db.relationship("Transaction", backref="_from", lazy="dynamic",
+    transactions_buyer = db.relationship("Transaction", backref="_from",
                                          foreign_keys="Transaction._from_id")
-    transactions_seller = db.relationship("Transaction", backref="_to", lazy="dynamic",
+    transactions_seller = db.relationship("Transaction", backref="_to",
                                           foreign_keys="Transaction._to_id")
 
     certificates = db.relationship("Certificate", backref="owner", lazy="dynamic")
@@ -110,15 +110,15 @@ class Transaction(TimestampMixin, db.Model):
         "Certificate",
         secondary=transaction_certificate,
         primaryjoin=(transaction_certificate.c.transaction_id == id),
-        secondaryjoin=(transaction_certificate.c.transaction_id == id),
-        backref=db.backref("transactions", lazy="dynamic"), lazy="dynamic"
+        # secondaryjoin=(transaction_certificate.c.transaction_id == id),
+        backref=db.backref("transactions")
     )
 
     def __repr__(self):
         return f"<Transaction@{self.id} {self._from} -> {self._to}>"
 
     def amount(self):
-        return self.certificates.count()
+        return len(self.certificates)
 
 
 @login.user_loader

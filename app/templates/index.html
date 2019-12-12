@@ -4,6 +4,8 @@
 
     {% for event in events %}
         {{ event.price }}
+        <a href="{{ url_for("event_buy", event_id=event.id) }}"> buy me!</a>
+        <br>
     {% endfor %}
 
 {% endblock %}

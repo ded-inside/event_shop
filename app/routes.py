@@ -15,13 +15,11 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-
 @app.route('/')
 @app.route("/index")
 def index():
     events = Event.query.filter_by(buyer=None).order_by(Event.time_edited).all()
     return render_template("index.html", events=events)
-
 
 
 @app.route("/logout")
@@ -79,7 +77,6 @@ def uploaded_file(filename):
                                filename)
 
 
-
 @app.route("/edit/user", methods=["GET", "POST"])
 @login_required
 def user_edit():
@@ -91,16 +88,15 @@ def user_edit():
             current_user.last_name = form.last_name.data
         if form.profile_picture.data:
             if allowed_file(form.profile_picture.data.filename):
-
                 image_data = request.files[form.profile_picture.name].read()
                 filename = secure_filename(form.profile_picture.data.filename)
 
-                open(os.path.join(os.getcwd(),"app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename), 'wb').write(image_data)
+                open(os.path.join(os.getcwd(), "app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename),
+                     'wb').write(image_data)
                 current_user.profile_pic_filename = filename
                 db.session.commit()
                 return redirect(url_for('user_page',
                                         username=current_user.username))
-
 
     return render_template("edit_user.html", form=form)
 
@@ -116,6 +112,11 @@ def users():
     _users = User.query.options(joinedload("events_host")).all()
     return render_template("users.html", users=_users)
 
+
+@app.route("/event/id/<event_id>")
+def event_page(event_id: int):
+    event = Event.query.get_or_404(event_id)
+    return render_template("event.html", event=event)
 
 
 @app.route("/event/add", methods=["GET", "POST"])
@@ -144,25 +145,38 @@ def event_add():
 def event_buy(event_id: int):
     event = Event.query.get_or_404(event_id)
     seller = event.seller
+    buyer: User = User.query.get(current_user.id)
     if event.buyer:
         return redirect(url_for("user_page", username=seller.username))
-    if current_user == seller:
+    if buyer == seller:
         flash("U cant buy your event")
         return redirect(url_for("user_page", username=current_user.username))
-    if current_user.balance() < event.price:
+    if buyer.balance() < event.price:
         flash("U dont have enough certs")
         return redirect(url_for("user_page", username=current_user.username))
 
-    cert: Certificate
-    # transaction = Transaction()
+    transaction = Transaction()
     remains = event.price
-    for cert in current_user.certificates:
+    cert: Certificate
+    for cert in buyer.certificates:
         if remains == 0:
             break
         cert.owner = seller
-        # transaction.certificates.append(cert)
+        transaction.certificates.append(cert)
         remains -= 1
-    event.buyer = current_user
-    # db.session.add(Transaction)
+    event.buyer = buyer
+    transaction._to = seller
+    transaction._from = buyer
+
+    db.session.add(transaction)
     db.session.commit()
     return redirect(url_for("index"))
+
+
+@app.route("/transactions")
+@login_required
+def transactions():
+    trns_buyer = current_user.transactions_buyer
+    trns_seller = current_user.transactions_seller
+
+    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller)
