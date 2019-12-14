@@ -1,19 +1,17 @@
-{% extends "base.html" %}
+{% import 'macro.html' as macro %}
 
-{% block app_content %}
+{% extends 'base.html' %}
 
-    {% for user in users %}
-        <ol>
-            {% for event in user.available_events() %}
-                <li>
-                    {{ event }}
-                    {{ event.price }}
-                    <a href="{{ url_for("event_buy", event_id=event.id) }}"> buy me!</a>
-                </li>
-            {% endfor %}
-        </ol>
+{% block title %}Клуб занятых людей{% endblock %}
 
-        <br>
-    {% endfor %}
-
+{% block content %}
+	<div class="products-catagories-area">
+		<div class="amado-pro-catagory">
+			{% for user in users %}
+				{{ macro.card_man(user) }}
+			{% else %}
+				Похоже, нет ни одного пользователя!
+			{% endfor %}
+		</div>
+	</div>
 {% endblock %}

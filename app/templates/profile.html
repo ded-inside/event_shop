@@ -1,0 +1,90 @@
+{% import 'macro.html' as html %}
+
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="shop_sidebar_area">
+
+    <div class="widget catagory mb-50">
+        <!-- Widget Title -->
+        <h6 class="widget-title mb-30">Разделы</h6>
+
+        <!--  Catagories  -->
+        <div class="catagories-menu">
+            <ul>
+                <li class="active"><a href="#">Основное</a></li>
+                <li><a href="#">Моё расписание</a></li>
+                <li><a href="#">Баланс</a></li>
+                <li><a href="#">Безопасность</a></li>
+                <li><a href="#">Выйти</a></li>
+            </ul>
+        </div>
+    </div>
+	<!-- Enter here another widgets -->
+</div>
+
+<div class="single-product-area section-padding-100">
+    <div class="container-fluid">
+
+        <!-- <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mt-50">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Furniture</a></li>
+                        <li class="breadcrumb-item"><a href="#">Chairs</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">white modern chair</li>
+                    </ol>
+                </nav>
+            </div>
+        </div> -->
+
+        <div class="row">
+            <div class="col-12 col-lg-7">
+				<!-- TODO фотку профиля (красиво) -->
+            </div>
+            <div class="col-12 col-lg-5">
+                <div class="single_product_desc">
+                    <div class="product-meta-data">
+						<a>
+                        	<h6>{{ user.full_name() }}</h6>
+						</a>
+                        <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">
+                            <div class="ratings">
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                            </div>
+                            <div class="review">
+                                <a href="#">Перейти к общению</a>
+                            </div>
+                        </div>
+                        <p class="avaibility"><i class="fa fa-circle"></i> В сети</p>
+                    </div>
+
+                    <div class="short_overview my-5">
+                        <p>ОПИСАНИЕ, О СЕБЕ И Т.Д.</p>
+                    </div>
+
+                    <form class="cart" method="post">
+                        <div class="cart-btn d-flex mb-50">
+                            <p>Qty</p>
+                            <div class="quantity">
+                                <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                                <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1">
+                                <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+                            </div>
+                        </div>
+                        <button type="submit" name="addtocart" value="5" class="btn amado-btn">Add to cart</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
