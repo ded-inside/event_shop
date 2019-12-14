@@ -51,6 +51,15 @@ def generate_default_state():
     db.create_all()
     db.session.commit()
 
+    ad = models.User(
+        username="Admin",
+        first_name="Admin",
+        last_name="Admin",
+        email="Admin@example.com"
+    )
+    ad.set_password("Admin")
+    db.session.add(ad)
+
     u1 = models.User(
         username="user1",
         first_name="fname",
