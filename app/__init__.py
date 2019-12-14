@@ -34,7 +34,7 @@ class MyAdminIndexView(AdminIndexView):
         return redirect(url_for("index"))
 
 
-admin = Admin(app, index_view=MyAdminIndexView())
+admin = Admin(app, index_view=MyAdminIndexView(), template_mode="bootstrap3")
 admin.add_view(ModelView(models.User, db.session))
 admin.add_view(ModelView(models.Event, db.session))
 admin.add_view(ModelView(models.Transaction, db.session))
@@ -79,7 +79,3 @@ def generate_default_state():
     db.session.add(u2)
 
     db.session.commit()
-
-    print(u1)
-    print(u2)
-    print(event)

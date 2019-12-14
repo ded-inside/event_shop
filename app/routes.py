@@ -33,7 +33,7 @@ def logout():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
-    form = LoginForm()
+    form = LoginForm(request.form)
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
@@ -49,7 +49,7 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
 
-    form = RegisterForm()
+    form = RegisterForm(request.form)
     if form.validate_on_submit():
         u = User.query.filter_by(username=form.username.data).first()
         if u:
@@ -80,7 +80,7 @@ def uploaded_file(filename):
 @app.route("/edit/user", methods=["GET", "POST"])
 @login_required
 def user_edit():
-    form = UserEditForm()
+    form = UserEditForm(request.form)
     if form.validate_on_submit():
         if form.first_name.data:
             current_user.first_name = form.first_name.data
@@ -122,7 +122,7 @@ def event_page(event_id: int):
 @app.route("/event/add", methods=["GET", "POST"])
 @login_required
 def event_add():
-    form = EventForm()
+    form = EventForm(request.form)
 
     if form.validate_on_submit():
         event = Event(
