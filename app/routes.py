@@ -16,7 +16,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/')
+@app.route('/', endpoint="index_clr")
 @app.route("/index")
 def index():
     users_ = User.query.join(User.events_host).order_by(desc(Event.time_edited)).all()
