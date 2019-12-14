@@ -50,16 +50,20 @@
 					<li {% if active == 'main' %} class="active" {% endif %}>
 						<a href="{{ url_for('index_clr') }}">Главная</a>
 					</li>
-					<li {% if active == 'login' %} class="active" {% endif %}>
-						<a href="#">Логин</a>
-					</li>
-					<li {% if active == 'aaaaa' %} class="active" {% endif %}>
-						<a href="#">ААААА</a>
-					</li>
 					<!-- TODO -->
 					{% if current_user.is_authenticated %}
 					<li {% if active == 'prof' %} class="active" {% endif %}>
 						<a href="{{ url_for('user_page', username=current_user.username) }}">Личный кабинет</a>
+					</li>
+					<li>
+						<a href="{{ url_for('logout') }}">Выйти</a>
+					</li>
+					{% else %}
+					<li {% if active == 'register' %} class="active" {% endif %}>
+						<a href="{{ url_for('register') }}">Регистрация</a>
+					</li>
+					<li {% if active == 'login' %} class="active" {% endif %}>
+						<a href="{{ url_for('login') }}">Войти</a>
 					</li>
 					{% endif %}
 				</ul>
