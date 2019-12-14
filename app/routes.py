@@ -1,4 +1,5 @@
 from flask_login import login_user, current_user, login_required, logout_user
+from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 
 from app import app, ALLOWED_EXTENSIONS
@@ -18,8 +19,8 @@ def allowed_file(filename):
 @app.route('/')
 @app.route("/index")
 def index():
-    events = Event.query.filter_by(buyer=None).order_by(Event.time_edited).all()
-    return render_template("index.html", events=events)
+    users_ = User.query.join(User.events_host).order_by(desc(Event.time_edited)).all()
+    return render_template("index.html", users=users_)
 
 
 @app.route("/logout")
@@ -75,6 +76,7 @@ def register():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
+
 
 
 @app.route("/edit/user", methods=["GET", "POST"])

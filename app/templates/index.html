@@ -2,9 +2,17 @@
 
 {% block app_content %}
 
-    {% for event in events %}
-        {{ event.price }}
-        <a href="{{ url_for("event_buy", event_id=event.id) }}"> buy me!</a>
+    {% for user in users %}
+        <ol>
+            {% for event in user.available_events() %}
+                <li>
+                    {{ event }}
+                    {{ event.price }}
+                    <a href="{{ url_for("event_buy", event_id=event.id) }}"> buy me!</a>
+                </li>
+            {% endfor %}
+        </ol>
+
         <br>
     {% endfor %}
 
