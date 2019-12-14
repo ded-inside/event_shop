@@ -1,6 +1,9 @@
 // Fonts
 $font-hn-bold: 'helveticaneuebold';
 $font-hn-med: 'helveticaneuemedium';
+$font-montserrat: 'Montserrat', sans-serif;
+$font-roboto: 'Roboto', sans-serif;
+$font-rubik: 'Rubik', sans-serif;
 
 // Heading Color
 $heading-color: #242424;
@@ -115,6 +118,8 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
     font-style: normal;
 }
 
+@import url('https://fonts.googleapis.com/css?family=Montserrat:500,600|Roboto:400,500,700|Rubik:400,500&display=swap&subset=cyrillic');
+
 /* :: 2.0 Import All CSS */
 
 /* :: 3.0 Base CSS */
@@ -130,7 +135,7 @@ html {
 
 body {
 	height: 100%;
-    font-family: $font-hn-med;
+    font-family: $font-roboto;
     font-size: 16px;
 }
 
@@ -616,7 +621,7 @@ img {
         .amado-nav {
             li {
                 a {
-                    font-size: 14px;
+                    font-size: 16px;
                     text-transform: uppercase;
                     position: relative;
                     z-index: 1;
@@ -1219,8 +1224,9 @@ img {
             display: block;
         }
 		.bg {
-			// opacity: 72%;
+			font-family: $font-montserrat;
 			height: 100%;
+			padding-right: 15px;
 			background-color: $bg-my;
 			overflow: hidden;
             @include trans-duration(250ms);
@@ -1237,29 +1243,6 @@ img {
             @include trans-duration(250ms);
         }
     }
-	// .footer-content {
-    //     position: absolute;
-    //     bottom: 20px;
-    //     right: 20px;
-    //     z-index: 10;
-    //     @media #{$breakpoint-xs} {
-    //         bottom: 10px;
-    //         right: 10px;
-    //     }
-    //     .line {
-    //         width: 80px;
-    //         height: 3px;
-    //         background-color: $bg-default;
-    //         display: block;
-    //         margin-top: 15px;
-    //         margin-left: auto;
-    //     }
-    //     h4 {
-    //         text-align: right;
-    //         margin-left: auto;
-    //         @include trans-duration(250ms);
-    //     }
-	// }
 	.description-content {
 		position: absolute;
 		top: 100%;
@@ -1555,7 +1538,7 @@ img {
     position: relative;
     z-index: 1;
     .widget-title {
-        font-size: 16px;
+        font-size: 26px;
         text-transform: capitalize;
         color: #242424;
     }

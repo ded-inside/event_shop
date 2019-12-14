@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:500,600|Roboto:400,500,700|Rubik:400,500&display=swap&subset=cyrillic');
 /* [Master Stylesheet v-1.0.0] */
 /* :: :: 1.0 Import Fonts */
  @font-face {
@@ -23,7 +24,7 @@
 }
  body {
 	 height: 100%;
-	 font-family: 'helveticaneuemedium';
+	 font-family: 'Roboto', sans-serif;
 	 font-size: 16px;
 }
  h1, h2, h3, h4, h5, h6 {
@@ -475,7 +476,7 @@
 	 background-color: #131212;
 }
  .main-content-wrapper .header-area .amado-nav li a {
-	 font-size: 14px;
+	 font-size: 16px;
 	 text-transform: uppercase;
 	 position: relative;
 	 z-index: 1;
@@ -1160,7 +1161,9 @@
 	 display: block;
 }
  .card-man .hover-content .bg {
+	 font-family: 'Montserrat', sans-serif;
 	 height: 100%;
+	 padding-right: 15px;
 	 background-color: rgba(255, 204, 0, 0.72);
 	 overflow: hidden;
 	 -webkit-transition-duration: 250ms;
@@ -1445,7 +1448,7 @@
 	 z-index: 1;
 }
  .widget .widget-title {
-	 font-size: 16px;
+	 font-size: 26px;
 	 text-transform: capitalize;
 	 color: #242424;
 }

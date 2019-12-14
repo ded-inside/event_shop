@@ -16,7 +16,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/')
+@app.route('/', endpoint='index_clr')
 @app.route("/index")
 def index():
     users_ = User.query.join(User.events_host).order_by(desc(Event.time_edited)).all()
@@ -33,22 +33,24 @@ def logout():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("index"))
-    form = LoginForm(request.form)
+        return redirect(url_for("index_clr"))
+    form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        return redirect(url_for('index_clr'))
     return render_template("login.html", form=form)
 
 
+# TODO: Check for existing emeail
+# TODO: Automatic login after register
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("index"))
+        return redirect(url_for("index_clr"))
 
     form = RegisterForm(request.form)
     if form.validate_on_submit():
@@ -106,7 +108,7 @@ def user_edit():
 @app.route("/user/<username>")
 def user_page(username: str):
     user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
-    return render_template("user.html", user=user)
+    return render_template("profile.html", user=user)
 
 
 @app.route("/users")

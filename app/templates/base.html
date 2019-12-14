@@ -14,7 +14,6 @@
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/core-style.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
 
 	{% block head %}{% endblock %}
 </head>
@@ -48,11 +47,21 @@
 			<!-- Amado Nav -->
 			<nav class="amado-nav">
 				<ul>
-					<li {% if active == 'main' %} class="active" {% endif %}><a href="{{ url_for('index') }}">Главная</a></li>
-					<li {% if active == 'login' %} class="active" {% endif %}><a href="#">Логин</a></li>
-					<li {% if active == 'aaaaa' %} class="active" {% endif %}><a href="#">ААААА</a></li>
+					<li {% if active == 'main' %} class="active" {% endif %}>
+						<a href="{{ url_for('index_clr') }}">Главная</a>
+					</li>
+					<li {% if active == 'login' %} class="active" {% endif %}>
+						<a href="#">Логин</a>
+					</li>
+					<li {% if active == 'aaaaa' %} class="active" {% endif %}>
+						<a href="#">ААААА</a>
+					</li>
 					<!-- TODO -->
-					<li {% if active == 'prof' %} class="active" {% endif %}><a href="{{ url_for('user_page', username='Alice') }}">Личный кабинет</a></li>
+					{% if current_user.is_authenticated %}
+					<li {% if active == 'prof' %} class="active" {% endif %}>
+						<a href="{{ url_for('user_page', username=current_user.username) }}">Личный кабинет</a>
+					</li>
+					{% endif %}
 				</ul>
 			</nav>
 			<!-- Button Group -->

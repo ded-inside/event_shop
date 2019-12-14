@@ -49,7 +49,7 @@
                 <div class="single_product_desc">
                     <div class="product-meta-data">
 						<a>
-                        	<h6>{% if user %}{{ user.name }}{% else %}None{% endif %}</h6>
+                        	<h6>{{ user.full_name() }}</h6>
 						</a>
                         <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">
                             <div class="ratings">
