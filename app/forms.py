@@ -43,7 +43,6 @@ class EventForm(FlaskForm):
     time_start = DateTimeField("Begins", validators=[DataRequired()])
     time_end = DateTimeField("Ends", validators=[DataRequired()])
 
-    test_date = DateField("ababa")
 
     price = IntegerField("Cost", validators=[NumberRange(min=1)])
 
