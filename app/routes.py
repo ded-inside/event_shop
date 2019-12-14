@@ -30,6 +30,21 @@ def logout():
     return redirect(url_for("index"))
 
 
+@app.route("/admin_panel")
+@login_required
+def admin_panel():
+    if current_user.username != "Admin":
+        return redirect(url_for("user_page", username=current_user.username))
+
+    users_ = User.query.all()
+    trans_ = Transaction.query.all()
+    certs_ = Certificate.query.all()
+
+
+
+
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:

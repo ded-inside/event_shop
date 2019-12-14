@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import url_for
-from flask_login import UserMixin
+from flask_login import UserMixin, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login
@@ -85,23 +85,16 @@ class Event(TimestampMixin, db.Model):
     time_start = db.Column(db.DateTime)
     time_end = db.Column(db.DateTime)
 
-pic_filename = db.Column(db.String())
+    pic_filename = db.Column(db.String())
 
-def pic_url(self):
-    fname = "pechka.jpg"
-    if self.pic_filename:
-        fname = self.pic_filename
-    return url_for("uploaded_file", filename=fname)
+    def pic_url(self):
+        fname = "pechka.jpg"
+        if self.pic_filename:
+            fname = self.pic_filename
+        return url_for("uploaded_file", filename=fname)
 
-pic_filename = db.Column(db.String())
+    price = db.Column(db.Integer, nullable=False, default=0)
 
-def pic_url(self):
-    fname = "pechka.jpg"
-    if self.pic_filename:
-        fname = self.pic_filename
-    return url_for("uploaded_file", filename=fname)
-
-price = db.Column(db.Integer, nullable=False, default=0)
 
 def __repr__(self):
     return f"<Event@{self.id} {self.title}>"
