@@ -3,7 +3,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 
 from app import app, ALLOWED_EXTENSIONS
-from flask import request, flash, redirect, url_for, send_from_directory, render_template
+from flask import request, flash, redirect, url_for, send_from_directory, render_template, abort
 from werkzeug.utils import secure_filename
 import os
 
@@ -121,13 +121,15 @@ def user_edit():
 
 @app.route("/user/<username>")
 def user_page(username: str):
+    if username == "Admin":
+        abort(404)
     user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
     return render_template("profile.html", user=user)
 
 
 @app.route("/users")
 def users():
-    _users = User.query.options(joinedload("events_host")).all()
+    _users = User.query.options(joinedload("events_host")).filter(User.username != "Admin").all()
     return render_template("users.html", users=_users)
 
 
