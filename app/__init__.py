@@ -7,7 +7,6 @@ from flask_login import LoginManager, current_user
 
 from test_config import Config
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = r"static/uploads"
 
 app = Flask(__name__)
