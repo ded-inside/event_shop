@@ -64,8 +64,6 @@ def login():
     return render_template("login.html", form=form)
 
 
-# TODO: Check for existing emeail
-# TODO: Automatic login after register
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -73,14 +71,14 @@ def register():
 
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        u = User.query.filter_by(username=form.username.data).first()
-        if u:
-            form.username.data = ""
-            flash("Username is alredy taken!")
-            return render_template("register.html", form=form)
-        if form.password1.data != form.password2.data:
-            flash("Passwords aren't equal!")
-            return render_template("register.html", form=form)
+        # u = User.query.filter_by(username=form.username.data).first()
+        # if u:
+        #     form.username.data = ""
+        #     flash("Username is alredy taken!")
+        #     return render_template("register.html", form=form)
+        # if form.password1.data != form.password2.data:
+        #     flash("Passwords aren't equal!")
+        #     return render_template("register.html", form=form)
         u = User(username=form.username.data,
                  first_name=form.first_name.data,
                  last_name=form.last_name.data,
@@ -89,6 +87,7 @@ def register():
         u.set_password(form.password1.data)
         db.session.add(u)
         db.session.commit()
+        login_user(u)
         return redirect(url_for("user_page", username=u.username))
     return render_template("register.html", form=form)
 
