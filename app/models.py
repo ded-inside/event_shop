@@ -85,19 +85,18 @@ class Event(TimestampMixin, db.Model):
     time_start = db.Column(db.DateTime)
     time_end = db.Column(db.DateTime)
 
-	pic_filename = db.Column(db.String())
+    pic_filename = db.Column(db.String())
 
-	def pic_url(self):
-		fname = "pechka.jpg"
-		if self.pic_filename:
-			fname = self.pic_filename
-		return url_for("uploaded_file", filename=fname)
+    def pic_url(self):
+        fname = "pechka.jpg"
+        if self.pic_filename:
+            fname = self.pic_filename
+        return url_for("uploaded_file", filename=fname)
 
-	price = db.Column(db.Integer, nullable=False, default=0)
+    price = db.Column(db.Integer, nullable=False, default=0)
 
-
-def __repr__(self):
-    return f"<Event@{self.id} {self.title}>"
+    def __repr__(self):
+        return f"<Event@{self.id} {self.title}>"
 
 
 class Certificate(db.Model):
