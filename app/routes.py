@@ -175,7 +175,7 @@ def event_add():
 def event_buy(event_id: int):
     event = Event.query.get_or_404(event_id)
     seller = event.seller
-    buyer: User = User.query.get(current_user.id)
+    buyer: User = current_user
     if event.buyer:
         return redirect(url_for("user_page", username=seller.username))
     if buyer == seller:
