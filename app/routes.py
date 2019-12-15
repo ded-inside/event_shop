@@ -19,7 +19,7 @@ def allowed_file(filename):
 @app.route('/', endpoint="index_clr")
 @app.route("/index")
 def index():
-    users_ = User.query.join(User.events_host).order_by(desc(Event.time_edited)).all()
+    users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(desc(Event.time_edited)).all()
     return render_template("index.html", users=users_)
 
 
