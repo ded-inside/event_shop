@@ -79,12 +79,19 @@ def generate_default_state():
         u1.certificates.append(cert)
         db.session.add(cert)
 
-    event = models.Event(
+    event1 = models.Event(
         price=42,
-        title="Eventb"
+        title="Event1"
     )
-    db.session.add(event)
-    u2.events_host.append(event)
+    event2 = models.Event(
+        price=42,
+        title="Event2"
+    )
+
+    db.session.add(event1)
+    db.session.add(event2)
+    u2.events_host.append(event1)
+    u2.events_host.append(event2)
 
     db.session.add(u1)
     db.session.add(u2)
