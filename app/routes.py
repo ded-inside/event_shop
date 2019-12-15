@@ -12,6 +12,13 @@ from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm
 from app.models import *
 
 
+# TODO: Admin panel
+# 1) All transactions
+# 2) All users
+# 3) All certs for every user
+# 4) All events for every user
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -28,7 +35,7 @@ def index():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("index_clr"))
 
 
 @app.route("/admin_panel")
@@ -89,7 +96,7 @@ def register():
         db.session.commit()
         login_user(u)
         return redirect(url_for("user_page", username=u.username))
-    return render_template("register.html", form=form)
+    return render_template("register.html", form=form, active='register')
 
 
 @app.route('/uploads/<filename>')
