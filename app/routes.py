@@ -204,4 +204,4 @@ def transactions():
 
 @app.route('/dbg/profile')
 def dbg_profile():
-	return render_template('profile.html')
+    return render_template('profile.html')
