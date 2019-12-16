@@ -15,6 +15,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
+login.login_view = "login"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 from app import models
@@ -51,6 +52,15 @@ def generate_default_state():
     db.create_all()
     db.session.commit()
 
+    ad = models.User(
+        username="Admin",
+        first_name="Admin",
+        last_name="Admin",
+        email="Admin@example.com"
+    )
+    ad.set_password("Admin")
+    db.session.add(ad)
+
     u1 = models.User(
         username="user1",
         first_name="fname",
@@ -86,12 +96,19 @@ def generate_default_state():
         u3.certificates.append(cert)
         db.session.add(cert)
 
-    event = models.Event(
+    event1 = models.Event(
         price=42,
-        title="Eventb"
+        title="Event1"
     )
-    db.session.add(event)
-    u2.events_host.append(event)
+    event2 = models.Event(
+        price=42,
+        title="Event2"
+    )
+
+    db.session.add(event1)
+    db.session.add(event2)
+    u2.events_host.append(event1)
+    u2.events_host.append(event2)
 
     db.session.add(u1)
     db.session.add(u2)

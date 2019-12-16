@@ -1,9 +1,10 @@
 from flask_login import login_user, current_user, login_required, logout_user
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
+from werkzeug.urls import url_parse
 
 from app import app, ALLOWED_EXTENSIONS
-from flask import request, flash, redirect, url_for, send_from_directory, render_template
+from flask import request, flash, redirect, url_for, send_from_directory, render_template, abort
 from werkzeug.utils import secure_filename
 import os
 
@@ -23,11 +24,11 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/', endpoint='index_clr')
+@app.route('/', endpoint="index_clr")
 @app.route("/index")
 def index():
-    users_ = User.query.join(User.events_host).order_by(desc(Event.time_edited)).all()
-    return render_template("index.html", users=users_, active='index')
+    users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(desc(Event.time_edited)).all()
+    return render_template("index.html", users=users_)
 
 
 @app.route("/logout")
@@ -35,6 +36,17 @@ def index():
 def logout():
     logout_user()
     return redirect(url_for("index_clr"))
+
+
+@app.route("/admin_panel")
+@login_required
+def admin_panel():
+    if current_user.username != "Admin":
+        return redirect(url_for("user_page", username=current_user.username))
+
+    users_ = User.query.all()
+    trans_ = Transaction.query.all()
+    certs_ = Certificate.query.all()
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -48,12 +60,13 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index_clr'))
-    return render_template("login.html", form=form, active='login')
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index_clr')
+        return redirect(next_page)
+    return render_template("login.html", form=form)
 
 
-# TODO: Check for existing emeail
-# TODO: Automatic login after register
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -61,14 +74,14 @@ def register():
 
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        u = User.query.filter_by(username=form.username.data).first()
-        if u:
-            form.username.data = ""
-            flash("Username is alredy taken!")
-            return render_template("register.html", form=form)
-        if form.password1.data != form.password2.data:
-            flash("Passwords aren't equal!")
-            return render_template("register.html", form=form)
+        # u = User.query.filter_by(username=form.username.data).first()
+        # if u:
+        #     form.username.data = ""
+        #     flash("Username is alredy taken!")
+        #     return render_template("register.html", form=form)
+        # if form.password1.data != form.password2.data:
+        #     flash("Passwords aren't equal!")
+        #     return render_template("register.html", form=form)
         u = User(username=form.username.data,
                  first_name=form.first_name.data,
                  last_name=form.last_name.data,
@@ -77,6 +90,7 @@ def register():
         u.set_password(form.password1.data)
         db.session.add(u)
         db.session.commit()
+        login_user(u)
         return redirect(url_for("user_page", username=u.username))
     return render_template("register.html", form=form, active='register')
 
@@ -85,7 +99,6 @@ def register():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
-
 
 
 @app.route("/edit/user", methods=["GET", "POST"])
@@ -114,13 +127,15 @@ def user_edit():
 
 @app.route("/user/<username>")
 def user_page(username: str):
+    if username == "Admin":
+        abort(404)
     user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
     return render_template("profile.html", user=user)
 
 
 @app.route("/users")
 def users():
-    _users = User.query.options(joinedload("events_host")).all()
+    _users = User.query.options(joinedload("events_host")).filter(User.username != "Admin").all()
     return render_template("users.html", users=_users)
 
 
@@ -195,4 +210,4 @@ def transactions():
 
 @app.route('/dbg/profile')
 def dbg_profile():
-	return render_template('profile.html')
+    return render_template('profile.html')
