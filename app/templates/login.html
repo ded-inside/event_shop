@@ -5,18 +5,66 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Sign In</h1>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
+<div class="cart-table-area section-padding-100">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-12 col-lg-8">
+				<div class="checkout_details_area mt-50">
+
+					<div class="cart-title">
+						<h2>Вход в систему</h2>
+					</div>
+					 {% with messages = get_flashed_messages() %}
+					 	{% for message in messages %}
+							<p>{{ message }}</p>
+						{% endfor %}
+					 {% endwith %}
+					<form action="{{ url_for('login') }}" method="post" novalidate>
+						{{ form.hidden_tag() }}
+						<div class="row">
+							<div class="col-12 mb-3">
+								{{ form.username(size=32, class='form-control', placeholder='Username') }}
+							</div>
+							<div class="col-12 mb-3">
+								{{ form.password(size=32, class='form-control', placeholder='Password') }}
+							</div>
+							<div class="col-12">
+								<div class="custom-control custom-checkbox d-block mb-2">
+									{{ form.remember_me(class='custom-control-input', id='remember', checked='true') }}
+									{{ form.remember_me.label(class='custom-control-label', for='remember') }}
+								</div>
+							</div>
+						</div>
+						{{ form.submit(class='btn amado-btn w-100') }}
+					</form>
+				</div>
+			</div>
+			<!-- <div class="col-12 col-lg-4">
+				<div class="cart-summary">
+					<h5>Стартовый взнос</h5>
+					<ul class="summary-table">
+						<li><span>Подытог:</span> <span>$300.00</span></li>
+						<li><span>Налог:</span> <span>$0.00</span></li>
+						<li><span>Итог:</span> <span>$300.00</span></li>
+					</ul>
+
+					<div class="payment-method">
+						<div class="custom-control custom-checkbox mr-sm-2">
+							<input type="checkbox" class="custom-control-input" id="sberbank" checked>
+							<label class="custom-control-label" for="paypal">Sberbank <img class="ml-15" src="img/core-img/paypal.png" alt=""></label>
+						</div>
+						<div class="custom-control custom-checkbox mr-sm-2">
+							<input type="checkbox" class="custom-control-input" id="paypal">
+							<label class="custom-control-label" for="paypal">Paypal <img class="ml-15" src="img/core-img/paypal.png" alt=""></label>
+						</div>
+						<div class="custom-control custom-checkbox mr-sm-2">
+							<input type="checkbox" class="custom-control-input" id="bankname">
+							<label class="custom-control-label" for="paypal">[BankName] <img class="ml-15" src="img/core-img/paypal.png" alt=""></label>
+						</div>
+					</div>
+				</div>
+			</div> -->
+		</div>
+	</div>
+</div>
 {% endblock %}

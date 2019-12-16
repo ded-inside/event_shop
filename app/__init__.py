@@ -65,9 +65,25 @@ def generate_default_state():
         email="u2@example.com",
     )
     u2.set_password("user2")
+    u3 = models.User(
+        username="user3",
+        first_name="fname3",
+        last_name="lname3",
+        email="u3@example.com",
+    )
+    u3.set_password("user3")
+    u4 = models.User(
+        username="user4",
+        first_name="fname4",
+        last_name="lname4",
+        email="u4@example.com",
+    )
+    u4.set_password("user4")
     for i in range(100):
         cert = models.Certificate()
         u1.certificates.append(cert)
+        u2.certificates.append(cert)
+        u3.certificates.append(cert)
         db.session.add(cert)
 
     event = models.Event(
@@ -79,5 +95,7 @@ def generate_default_state():
 
     db.session.add(u1)
     db.session.add(u2)
+    db.session.add(u3)
+    db.session.add(u4)
 
     db.session.commit()

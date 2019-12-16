@@ -1703,4 +1703,10 @@
 	 border-radius: 0;
 	 background-color: #f5f7fa;
 }
+ .profile-pic {
+	 display: block;
+	 width: 100%;
+	 object-fit: scale-down;
+	 background-color: #f5f7fa;
+}
 /* ##### The End ##### */
