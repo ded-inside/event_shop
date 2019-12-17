@@ -2,6 +2,9 @@ from flask_login import login_user, current_user, login_required, logout_user
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 from werkzeug.urls import url_parse
+from wtforms import IntegerField
+from wtforms.fields.core import UnboundField
+from wtforms.validators import NumberRange
 
 from app import app, ALLOWED_EXTENSIONS
 from flask import request, flash, redirect, url_for, send_from_directory, render_template, abort
@@ -57,35 +60,42 @@ def admin_panel():
                                   "unavailable": certificates_unavailable})
 
 
-@app.route("/admin_panel/user/<username>")
+@app.route("/admin_panel/user/<username>", methods=["GET", "POST"])
 @login_required
 def admin_panel_user(username: str):
     if current_user.username != "Admin":
         return abort(404)
         # return redirect(url_for("user_page", username=current_user.username))
     user = User.query.filter(User.username == username).first_or_404()
-    form = AdminUserEditForm()
-    form.user = user
-    
-    certificates_avaliable = Certificate.available().all()
+    form = AdminUserEditForm(request.form)
+
+    certificates_available = Certificate.available().all()
     certificates_unavailable = Certificate.unavailable().all()
     
     if form.validate_on_submit():
-        if form.certs > user.balance():
-            for i in range(form.certs - user.balance()):
+        if form.certs.data > user.balance():
+            for i in range(form.certs.data - user.balance()):
                 cert = Certificate.available().first()
+                if cert is None:
+                    db.session.rollback()
+                    return render_template("admin_panel_user.html", certs={"available": certificates_available,
+                                                                           "unavailable": certificates_unavailable},
+                                           form=form, user=user)
+                
                 user.certificates.append(cert)
         
         else:
-            for i in range(user.balance() - form.certs):
+            for i in range(user.balance() - form.certs.data):
                 cert = user.certificates[0]
                 user.certificates.remove(cert)
         
         db.session.commit()
     
-    return render_template("admin_panel_user.html", certs={"available": certificates_avaliable,
-                                                           "unavailable": certificates_unavailable}, form=form,
-                           user=user)
+    certificates_available = Certificate.available().all()
+    certificates_unavailable = Certificate.unavailable().all()
+    return render_template("admin_panel_user.html", certs={"available": certificates_available,
+                                                           "unavailable": certificates_unavailable},
+                           form=form, user=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -157,9 +167,9 @@ def user_edit():
                 open(os.path.join(os.getcwd(), "app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename),
                      'wb').write(image_data)
                 current_user.profile_pic_filename = filename
-                db.session.commit()
-                return redirect(url_for('user_page',
-                                        username=current_user.username))
+        db.session.commit()
+        return redirect(url_for('user_page',
+                                username=current_user.username))
     
     return render_template("edit_user.html", form=form)
 

@@ -2,7 +2,13 @@
 
 {% block admin_content %}
     <div>
-        {{ form }}<br>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}<br>
+            {{ form.certs.label }}<br>
+            {{ form.certs }}
+            {{ form.submit }}<br>
+        </form>
+        <br>
         username: {{ user.username }}<br>
         name: {{ user.full_name() }}<br>
         balance: {{ user.balance() }}<br>
