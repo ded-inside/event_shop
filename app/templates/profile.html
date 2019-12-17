@@ -19,13 +19,13 @@
                         	<h6>{{ user.full_name() }}</h6>
 						</a>
                         <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">
-                            <div class="ratings">
+                            <!-- <div class="ratings">
                                 <i class="fa fa-star" aria-hidden="true"></i>
                                 <i class="fa fa-star" aria-hidden="true"></i>
                                 <i class="fa fa-star" aria-hidden="true"></i>
                                 <i class="fa fa-star" aria-hidden="true"></i>
                                 <i class="fa fa-star" aria-hidden="true"></i>
-                            </div>
+                            </div> -->
 							<!-- TODO Чата не будет -->
                             <!-- <div class="review">
                                 <a href="#">Перейти к общению</a>
@@ -39,10 +39,13 @@
 						<p>{{ user.about }}</p>
                     </div>
 
+					{% if user == current_user %}
                     <div class="cart">
-						<!-- TODO edit button -->
-                        <button type="submit" name="addtocart" class="btn amado-btn">Редактировать</button>
+						<a href="{{ url_for('user_edit') }}">
+                        	<button type="submit" name="addtocart" class="btn amado-btn">Редактировать</button>
+						</a>
                     </div>
+					{% endif %}
                 </div>
             </div>
         </div>

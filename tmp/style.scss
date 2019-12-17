@@ -921,6 +921,12 @@ img {
                                 }
                             }
                         }
+						img {
+							width: 166px;
+							height: 166px;
+							object-fit: cover;
+							background-color: $bg-light;
+						}
                     }
                 }
             }
@@ -1487,7 +1493,7 @@ img {
 	top: 100%;
     z-index: 1;
     background-color: #252525;
-    padding: 80px 0;
+    padding: 40px;
     .single_widget_area {
         .copywrite {
             font-size: 12px;

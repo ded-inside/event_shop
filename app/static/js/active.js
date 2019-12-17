@@ -45,13 +45,13 @@
     });
 
     // :: 3.0 ScrollUp Active Code
-    if ($.fn.scrollUp) {
-        $.scrollUp({
-            scrollSpeed: 1000,
-            easingType: 'easeInOutQuart',
-            scrollText: '<i class="fa fa-angle-up" aria-hidden="true"></i>'
-        });
-    }
+    // if ($.fn.scrollUp) {
+    //     $.scrollUp({
+    //         scrollSpeed: 1000,
+    //         easingType: 'easeInOutQuart',
+    //         scrollText: '<i class="fa fa-angle-up" aria-hidden="true"></i>'
+    //     });
+    // }
 
     // :: 4.0 Sticky Active Code
     $window.on('scroll', function () {
