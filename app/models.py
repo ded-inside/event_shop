@@ -107,7 +107,15 @@ class Certificate(db.Model):
     def __repr__(self):
         return f"<Cert@{self.id} {self.owner}>"
 
-
+    @staticmethod
+    def available():
+        return Certificate.query.filter(Certificate.owner == None)
+    
+    @staticmethod
+    def unavailable():
+        return Certificate.query.filter(Certificate.owner != None)
+    
+    
 class Transaction(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     

@@ -17,6 +17,8 @@ from wtforms.validators import (DataRequired,
                                 NumberRange,
                                 EqualTo,
                                 )
+
+from wtforms import *
 from app.models import *
 
 
@@ -102,3 +104,13 @@ class EventForm(FlaskForm):
 
 class AdminCertificatesEditForm(FlaskForm):
     max_certs = IntegerField("Maximum certificates", validators=[])
+
+
+class AdminUserEditForm(FlaskForm):
+    def __init__(self, user: User,  formdata=object(), **kwargs):
+        super(formdata=formdata, **kwargs)
+        self.user: User = user
+        self.certs = IntegerField("Certs", validators=[NumberRange(min=0, max=Certificate.available().count()+self.user.balance())])
+        
+    
+    submit = SubmitField("Ok")

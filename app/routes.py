@@ -8,7 +8,7 @@ from flask import request, flash, redirect, url_for, send_from_directory, render
 from werkzeug.utils import secure_filename
 import os
 
-from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm
+from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm, AdminUserEditForm
 from app.models import *
 
 
@@ -27,7 +27,8 @@ def allowed_file(filename):
 @app.route('/', endpoint="index_clr")
 @app.route("/index")
 def index():
-    users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(desc(Event.time_edited)).all()
+    users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(
+        desc(Event.time_edited)).all()
     return render_template("index.html", users=users_, active='main')
 
 
@@ -42,13 +43,49 @@ def logout():
 @login_required
 def admin_panel():
     if current_user.username != "Admin":
-        return redirect(url_for("user_page", username=current_user.username))
+        return abort(404)
+        # return redirect(url_for("user_page", username=current_user.username))
     
-    users_ = User.query.all()
+    users_ = User.query.filter(User.username != "Admin").all()
     trans_ = Transaction.query.all()
-    certs_ = Certificate.query.all()
+    # certs_ = Certificate.query.all()
+    certificates_available = Certificate.available().all()
+    certificates_unavailable = Certificate.unavailable().all()
     
-    redirect()
+    return render_template("admin_panel_index.html", users=users_, trans=trans_,
+                           certs={"available": certificates_available,
+                                  "unavailable": certificates_unavailable})
+
+
+@app.route("/admin_panel/user/<username>")
+@login_required
+def admin_panel_user(username: str):
+    if current_user.username != "Admin":
+        return abort(404)
+        # return redirect(url_for("user_page", username=current_user.username))
+    user = User.query.filter(User.username == username).first_or_404()
+    form = AdminUserEditForm()
+    form.user = user
+    
+    certificates_avaliable = Certificate.available().all()
+    certificates_unavailable = Certificate.unavailable().all()
+    
+    if form.validate_on_submit():
+        if form.certs > user.balance():
+            for i in range(form.certs - user.balance()):
+                cert = Certificate.available().first()
+                user.certificates.append(cert)
+        
+        else:
+            for i in range(user.balance() - form.certs):
+                cert = user.certificates[0]
+                user.certificates.remove(cert)
+        
+        db.session.commit()
+    
+    return render_template("admin_panel_user.html", certs={"available": certificates_avaliable,
+                                                           "unavailable": certificates_unavailable}, form=form,
+                           user=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -73,7 +110,7 @@ def login():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("index_clr"))
-
+    
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         # u = User.query.filter_by(username=form.username.data).first()
@@ -116,14 +153,14 @@ def user_edit():
             if allowed_file(form.profile_picture.data.filename):
                 image_data = request.files[form.profile_picture.name].read()
                 filename = secure_filename(form.profile_picture.data.filename)
-
+                
                 open(os.path.join(os.getcwd(), "app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename),
                      'wb').write(image_data)
                 current_user.profile_pic_filename = filename
                 db.session.commit()
                 return redirect(url_for('user_page',
                                         username=current_user.username))
-
+    
     return render_template("edit_user.html", form=form)
 
 
@@ -132,7 +169,8 @@ def user_page(username: str):
     if username == "Admin":
         abort(404)
     user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
-    return render_template("profile.html", user=user, submenu='main', active='profile' if user == current_user else None)
+    return render_template("profile.html", user=user, submenu='main',
+                           active='profile' if user == current_user else None)
 
 
 @app.route("/users")
@@ -148,17 +186,18 @@ def event_page(event_id: int):
 
 
 @app.route('/user/<username>/events')
-def events(username :str):
-	_user = User.query.filter(User.username == username).first();
-	_events = Event.query.filter(Event.seller_id == _user.id);
-	return render_template('events.html', events=_events, user=_user, submenu='shedule', active='profile' if _user == current_user else None)
+def events(username: str):
+    _user = User.query.filter(User.username == username).first();
+    _events = Event.query.filter(Event.seller_id == _user.id);
+    return render_template('events.html', events=_events, user=_user, submenu='shedule',
+                           active='profile' if _user == current_user else None)
 
 
 @app.route("/event/add", methods=["GET", "POST"])
 @login_required
 def event_add():
     form = EventForm(request.form)
-
+    
     if form.validate_on_submit():
         event = Event(
             title=form.title.data,
@@ -189,7 +228,7 @@ def event_buy(event_id: int):
     if buyer.balance() < event.price:
         flash("U dont have enough certs")
         return redirect(url_for("user_page", username=current_user.username))
-
+    
     transaction = Transaction()
     remains = event.price
     cert: Certificate
@@ -202,7 +241,7 @@ def event_buy(event_id: int):
     event.buyer = buyer
     transaction._to = seller
     transaction._from = buyer
-
+    
     db.session.add(transaction)
     db.session.commit()
     return redirect(url_for("index"))
@@ -213,7 +252,7 @@ def event_buy(event_id: int):
 def transactions():
     trns_buyer = current_user.transactions_buyer
     trns_seller = current_user.transactions_seller
-
+    
     return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller)
 
 

@@ -97,6 +97,9 @@ def generate_default_state():
         u2.certificates.append(cert)
         u3.certificates.append(cert)
         db.session.add(cert)
+    for i in range(200):
+        cert = models.Certificate()
+        db.session.add(cert)
     
     event1 = models.Event(
         price=42,
