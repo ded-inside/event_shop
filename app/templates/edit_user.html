@@ -1,28 +1,58 @@
 {% extends "base.html" %}
 
-{% block app_content %}
-    <h1>Sign Up</h1>
-    <form action="" method="post" enctype="multipart/form-data" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.first_name.label }}<br>
-            {{ form.first_name(size=32) }}
-        </p>
-        <p>
-            {{ form.last_name.label }}<br>
-            {{ form.last_name(size=32) }}
-        </p>
-        <p>
-            {{ form.job.label }}<br>
-            {{ form.job(size=32) }}
-        </p>
-        <p>
-            {{ form.about.label }}<br>
-            {{ form.about(size=32) }}
-        </p>
-        {{ form.profile_picture.label }}<br>
-        {{ form.profile_picture }}
+{% block title %}Личный кабинет{% endblock %}
 
-        <p>{{ form.submit() }}</p>
-    </form>
+{% block content %}
+
+	{{ super() }}
+
+	<div class="cart-table-area section-padding-100">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12 col-lg-8">
+					<div class="checkout_details_area mt-50">
+						<div class="cart-title">
+							<h2>Редактирование профиля</h2>
+						</div>
+						{% with messages = get_flashed_messages() %}
+						{% for message in messages %}
+						<p>{{ message }}</p>
+						{% endfor %}
+						{% endwith %}
+						<form action="{{ url_for('user_edit') }}" method="post" enctype="multipart/form-data" novalidate>
+							{{ form.hidden_tag() }}
+							<div class="row">
+								<div class="col-md-6 mb-3">
+									{{ form.first_name(size=32, class='form-control', placeholder='First Name') }}
+									{% for error in form.first_name.errors %}
+									<span style="color: red;">{{ error }}</span>
+									{% endfor %}
+								</div>
+								<div class="col-md-6 mb-3">
+									{{ form.last_name(size=32, class='form-control', placeholder='Last Name') }}
+									{% for error in form.last_name.errors %}
+									<span style="color: red;">{{ error }}</span>
+									{% endfor %}
+								</div>
+								<div class="col-12 mb-3">
+									{{ form.job(size=32, class='form-control', placeholder='Job') }}
+									{% for error in form.job.errors %}
+									<span style="color: red;">{{ error }}</span>
+									{% endfor %}
+								</div>
+								<div class="col-12 mb-3">
+									{{ form.about(class='form-control w-100', rows='10', cols='30', placeholder='Расскажите о себе') }}
+								</div>
+							</div>
+							{{ form.submit(class='btn amado-btn w-100') }}
+						</form>
+					</div>
+				</div>
+	            <div class="col-12 col-lg-4">
+					<img class="profile-pic mt-50" src="{{ current_user.profile_pic_url() }}" alt="">
+					{{ form.profile_picture }}
+	            </div>
+			</div>
+		</div>
+	</div>
 {% endblock %}

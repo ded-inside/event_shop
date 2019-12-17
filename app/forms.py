@@ -80,7 +80,7 @@ class UserEditForm(FlaskForm):
 
     profile_picture = FileField("Profile picture")
 
-    submit = SubmitField("Update")
+    submit = SubmitField("Обновить")
 
 
 class EventForm(FlaskForm):

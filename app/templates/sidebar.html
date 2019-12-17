@@ -9,7 +9,8 @@
                 <li {% if submenu == 'main' %}class="active"{% endif %}><a href="{{ url_for('user_page', username=user.username) }}">Основное</a></li>
                 <li {% if submenu == 'shedule' %}class="active"{% endif %}><a href="{{ url_for('events', username=user.username) }}">Расписание</a></li>
 				{% if user == current_user %}
-                <li {% if submenu == 'balance' %}class="active"{% endif %}><a href="#">Баланс</a></li>
+				<li {% if submenu == 'transactions' %}class="active"{% endif %}><a href="#">Транзакции</a></li>
+                <!-- <li {% if submenu == 'balance' %}class="active"{% endif %}><a href="#">Баланс</a></li> -->
                 <li {% if submenu == 'safety' %}class="active"{% endif %}><a href="#">Безопасность</a></li>
 				{% endif %}
             </ul>

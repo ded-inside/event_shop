@@ -118,9 +118,9 @@ def user_edit():
                 open(os.path.join(os.getcwd(), "app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename),
                      'wb').write(image_data)
                 current_user.profile_pic_filename = filename
-                db.session.commit()
-                return redirect(url_for('user_page',
-                                        username=current_user.username))
+        db.session.commit()
+        return redirect(url_for('user_page',
+                                username=current_user.username))
 
     return render_template("edit_user.html", form=form)
 
