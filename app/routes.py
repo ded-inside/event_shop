@@ -28,7 +28,7 @@ def allowed_file(filename):
 @app.route("/index")
 def index():
     users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(desc(Event.time_edited)).all()
-    return render_template("index.html", users=users_)
+    return render_template("index.html", users=users_, active='main')
 
 
 @app.route("/logout")
@@ -66,7 +66,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index_clr')
         return redirect(next_page)
-    return render_template("login.html", form=form)
+    return render_template("login.html", form=form, active='login')
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -132,7 +132,7 @@ def user_page(username: str):
     if username == "Admin":
         abort(404)
     user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
-    return render_template("profile.html", user=user)
+    return render_template("profile.html", user=user, submenu='main', active='profile' if user == current_user else None)
 
 
 @app.route("/users")
@@ -145,6 +145,13 @@ def users():
 def event_page(event_id: int):
     event = Event.query.get_or_404(event_id)
     return render_template("event.html", event=event)
+
+
+@app.route('/user/<username>/events')
+def events(username :str):
+	_user = User.query.filter(User.username == username).first();
+	_events = Event.query.filter(Event.seller_id == _user.id);
+	return render_template('events.html', events=_events, user=_user, submenu='shedule', active='profile' if _user == current_user else None)
 
 
 @app.route("/event/add", methods=["GET", "POST"])

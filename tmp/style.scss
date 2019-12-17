@@ -13,6 +13,8 @@ $text-color: #6d6d6d;
 $bg-default: #fbb710;
 // My Background
 $bg-my: rgba(255, 204, 0, 0.72);
+// Light Background
+$bg-light: #f5f7fa;
 // Gray Background
 $bg-gray: #f7f7f7;
 // White Color
@@ -137,6 +139,8 @@ body {
 	height: 100%;
     font-family: $font-roboto;
     font-size: 16px;
+	display: flex;
+	flex-direction: column;
 }
 
 h1,
@@ -558,6 +562,7 @@ img {
 .main-content-wrapper {
     position: relative;
     z-index: 1;
+	flex-grow: 1;
     @include trans-duration(500ms);
     @include flex-wrap(wrap);
     @media #{$breakpoint-xs} {
@@ -783,18 +788,18 @@ img {
     .cart-table-area {
         position: relative;
         z-index: 1;
-        @include flex(0 0 calc(95% - 320px));
-        width: calc(95% - 320px);
-        max-width: calc(95% - 320px);
+        @include flex(0 0 calc(100% - 550px));
+        width: calc(100% - 550px);
+        max-width: calc(100% - 550px);
         @media #{$breakpoint-lg} {
-            @include flex(0 0 calc(100% - 320px));
-            width: calc(100% - 320px);
-            max-width: calc(100% - 320px);
+            @include flex(0 0 calc(100% - 550px));
+            width: calc(100% - 550px);
+            max-width: calc(100% - 550px);
         }
         @media #{$breakpoint-md} {
-            @include flex(0 0 calc(100% - 280px));
-            width: calc(100% - 280px);
-            max-width: calc(100% - 280px);
+            @include flex(0 0 calc(100% - 460px));
+            width: calc(100% - 460px);
+            max-width: calc(100% - 460px);
         }
         @media #{$breakpoint-xs} {
             @include flex(0 0 100%);
@@ -1040,6 +1045,16 @@ img {
         .single_product_desc {
             position: relative;
             z-index: 1;
+			a {
+				display: block;
+				h6 {
+					font-size: 30px;
+					margin-bottom: 5px;
+					@media #{$breakpoint-lg} {
+						font-size: 20px;
+					}
+				}
+			}
             .product-meta-data {
                 .line {
                     width: 80px;
@@ -1054,16 +1069,6 @@ img {
                     color: $bg-default;
                     line-height: 1;
                     margin-bottom: 10px;
-                }
-                a {
-                    display: block;
-                    h6 {
-                        font-size: 30px;
-                        margin-bottom: 5px;
-                        @media #{$breakpoint-lg} {
-                            font-size: 20px;
-                        }
-                    }
                 }
                 .ratings-review {
                     .ratings {
@@ -1092,6 +1097,9 @@ img {
                 }
             }
             .short_overview {
+				h1 {
+
+				}
                 p {
                     line-height: 2.1;
                     color: #6b6b6b;
@@ -1206,6 +1214,8 @@ img {
         }
         img {
             width: 100%;
+			background-color: $bg-light;
+			object-fit: scale-down;
         }
     }
     .hover-content {
@@ -1795,6 +1805,13 @@ img {
             background-color: #f5f7fa;
         }
     }
+}
+
+.profile-pic {
+	display: block;
+	width: 100%;
+	object-fit: scale-down;
+	background-color: $bg-light;
 }
 
 /* ##### The End ##### */

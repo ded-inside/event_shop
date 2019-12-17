@@ -52,7 +52,7 @@
 					</li>
 					<!-- TODO -->
 					{% if current_user.is_authenticated %}
-					<li {% if active == 'prof' %} class="active" {% endif %}>
+					<li {% if active == 'profile' %} class="active" {% endif %}>
 						<a href="{{ url_for('user_page', username=current_user.username) }}">Личный кабинет</a>
 					</li>
 					<li>
