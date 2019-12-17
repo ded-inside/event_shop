@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="shop_sidebar_area">
+    <div class="widget catagory mb-50">
+        <h6 class="widget-title mb-30">Разделы</h6>
+        <div class="catagories-menu">
+            <ul>
+                <li {% if submenu == 'main' %}class="active"{% endif %}><a href="{{ url_for('user_page', username=user.username) }}">Основное</a></li>
+                <li {% if submenu == 'shedule' %}class="active"{% endif %}><a href="{{ url_for('events', username=user.username) }}">Расписание</a></li>
+				{% if user == current_user %}
+                <li {% if submenu == 'balance' %}class="active"{% endif %}><a href="#">Баланс</a></li>
+                <li {% if submenu == 'safety' %}class="active"{% endif %}><a href="#">Безопасность</a></li>
+				{% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
