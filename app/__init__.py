@@ -23,7 +23,7 @@ from app import models
 class MyModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.username == "Admin"
-
+    
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("index"))
 
@@ -31,7 +31,7 @@ class MyModelView(ModelView):
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.username == "Admin"
-
+    
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("index"))
 
@@ -50,7 +50,7 @@ def generate_default_state():
     db.drop_all()
     db.create_all()
     db.session.commit()
-
+    
     ad = models.User(
         username="Admin",
         first_name="Admin",
@@ -59,13 +59,13 @@ def generate_default_state():
     )
     ad.set_password("Admin")
     db.session.add(ad)
-
+    
     u1 = models.User(
         username="user1",
         first_name="fname",
         last_name="lname",
         email="u1@example.com",
-		profile_pic_filename='Png.png',
+        profile_pic_filename='Png.png',
     )
     u1.set_password('user1')
     u2 = models.User(
@@ -73,7 +73,7 @@ def generate_default_state():
         first_name="fname2",
         last_name="lname2",
         email="u2@example.com",
-		profile_pic_filename='make-an-anime-vaporwave-profile-picture.jpg',
+        profile_pic_filename='make-an-anime-vaporwave-profile-picture.jpg',
     )
     u2.set_password("user2")
     u3 = models.User(
@@ -81,7 +81,7 @@ def generate_default_state():
         first_name="fname3",
         last_name="lname3",
         email="u3@example.com",
-		profile_pic_filename='59-598379_anime-png-tumblr-anime-profile-pic-transparent-png.png',
+        profile_pic_filename='59-598379_anime-png-tumblr-anime-profile-pic-transparent-png.png',
     )
     u3.set_password("user3")
     u4 = models.User(
@@ -97,7 +97,7 @@ def generate_default_state():
         u2.certificates.append(cert)
         u3.certificates.append(cert)
         db.session.add(cert)
-
+    
     event1 = models.Event(
         price=42,
         title="Event1"
@@ -106,15 +106,15 @@ def generate_default_state():
         price=42,
         title="Event2"
     )
-
+    
     db.session.add(event1)
     db.session.add(event2)
     u2.events_host.append(event1)
     u2.events_host.append(event2)
-
+    
     db.session.add(u1)
     db.session.add(u2)
     db.session.add(u3)
     db.session.add(u4)
-
+    
     db.session.commit()
