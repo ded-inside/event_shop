@@ -1,0 +1,11 @@
+{% extends "admin_panel_base.html" %}
+
+{% block admin_content %}
+    <div>
+        {{ form }}<br>
+        username: {{ user.username }}<br>
+        name: {{ user.full_name() }}<br>
+        balance: {{ user.balance() }}<br>
+        <a href="{{ url_for("user_page", username=user.username) }}">user page</a>
+    </div>
+{% endblock %}

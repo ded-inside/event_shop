@@ -17,6 +17,8 @@ from wtforms.validators import (DataRequired,
                                 NumberRange,
                                 EqualTo,
                                 )
+
+from wtforms import *
 from app.models import *
 
 
@@ -37,7 +39,7 @@ class RegisterForm(FlaskForm):
         validators=[DataRequired(message="Поле обязательно для заполнения"),
                     Length(min=4,
                            max=25,
-                           message="Длина должна быть от %(min)d до %(max)d символов")])    # noqa
+                           message=f"Длина должна быть от %(min)d до %(max)d символов")])    # noqa
     password1 = PasswordField(
         "Password",
         validators=[DataRequired(
@@ -57,7 +59,7 @@ class RegisterForm(FlaskForm):
                             Email(message="email введен не корректно"),
                             Length(min=4,
                                    max=35,
-                                   message=f"Длина должна быть от {min} до {max} символов")])   # noqa
+                                   message=f"Длина должна быть от %(min)d до %(max)d символов")])   # noqa
     submit = SubmitField("Sign Up")
 
     def validate_username(self, username):
@@ -98,3 +100,17 @@ class EventForm(FlaskForm):
     price = IntegerField("Cost", validators=[NumberRange(min=1)])
 
     submit = SubmitField("Add")
+
+
+class AdminCertificatesEditForm(FlaskForm):
+    max_certs = IntegerField("Maximum certificates", validators=[])
+
+
+class AdminUserEditForm(FlaskForm):
+    def __init__(self, user: User,  formdata=object(), **kwargs):
+        super(formdata=formdata, **kwargs)
+        self.user: User = user
+        self.certs = IntegerField("Certs", validators=[NumberRange(min=0, max=Certificate.available().count()+self.user.balance())])
+        
+    
+    submit = SubmitField("Ok")
