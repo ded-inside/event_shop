@@ -70,7 +70,8 @@ def admin_panel():
 
     return render_template("admin_panel_index.html", users=users_, trans=trans_,
                            certs={"available": certificates_available,
-                                  "unavailable": certificates_unavailable}, form=form)
+                                  "unavailable": certificates_unavailable}, form=form,
+                           active='admin_panel')
 
 
 @app.route("/admin_panel/user/<username>", methods=["GET", "POST"])
@@ -227,7 +228,7 @@ def events(username: str):
 @login_required
 def event_add():
     form = EventForm()
-    
+
     if form.validate_on_submit():
         event = Event(
             title=form.title.data,
