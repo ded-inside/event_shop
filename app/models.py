@@ -88,7 +88,7 @@ class Event(TimestampMixin, db.Model):
     pic_filename = db.Column(db.String())
     
     def pic_url(self):
-        fname = "pechka.jpg"
+        # fname = "pechka.jpg"
         if self.pic_filename:
             fname = self.pic_filename
         return url_for("uploaded_file", filename=fname)
