@@ -1,11 +1,7 @@
 from flask_login import login_user, current_user, login_required, logout_user
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
-from werkzeug.datastructures import FileStorage
 from werkzeug.urls import url_parse
-from wtforms import IntegerField
-from wtforms.fields.core import UnboundField
-from wtforms.validators import NumberRange
 
 from app import app, ALLOWED_EXTENSIONS
 from flask import request, flash, redirect, url_for, send_from_directory, render_template, abort
@@ -28,7 +24,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/')
+@app.route('/', endpoint="index_clr")
+@app.route("/index")
 def index():
     users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(
         desc(Event.time_edited)).all()
@@ -39,7 +36,7 @@ def index():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("index_clr"))
 
 
 @app.route("/admin_panel")
@@ -48,33 +45,34 @@ def admin_panel():
     if current_user.username != "Admin":
         return abort(404)
         # return redirect(url_for("user_page", username=current_user.username))
-
+    
     users_ = User.query.filter(User.username != "Admin").all()
     trans_ = Transaction.query.all()
     # certs_ = Certificate.query.all()
     certificates_available = Certificate.available().all()
     certificates_unavailable = Certificate.unavailable().all()
-
+    
     return render_template("admin_panel_index.html", users=users_, trans=trans_,
                            certs={"available": certificates_available,
                                   "unavailable": certificates_unavailable})
 
 
-@app.route("/admin_panel/user/<username>", methods=["GET", "POST"])
+@app.route("/admin_panel/user/<username>")
 @login_required
 def admin_panel_user(username: str):
     if current_user.username != "Admin":
         return abort(404)
         # return redirect(url_for("user_page", username=current_user.username))
     user = User.query.filter(User.username == username).first_or_404()
-    form = AdminUserEditForm(request.form)
-
+    form = AdminUserEditForm()
+    form.user = user
+    
     certificates_available = Certificate.available().all()
     certificates_unavailable = Certificate.unavailable().all()
-
+    
     if form.validate_on_submit():
-        if form.certs.data > user.balance():
-            for i in range(form.certs.data - user.balance()):
+        if form.certs > user.balance():
+            for i in range(form.certs - user.balance()):
                 cert = Certificate.available().first()
                 if cert is None:
                     db.session.rollback()
@@ -83,12 +81,12 @@ def admin_panel_user(username: str):
                                            form=form, user=user)
 
                 user.certificates.append(cert)
-
+        
         else:
-            for i in range(user.balance() - form.certs.data):
+            for i in range(user.balance() - form.certs):
                 cert = user.certificates[0]
                 user.certificates.remove(cert)
-
+        
         db.session.commit()
 
     certificates_available = Certificate.available().all()
@@ -101,7 +99,7 @@ def admin_panel_user(username: str):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("index"))
+        return redirect(url_for("index_clr"))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -111,7 +109,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('index_clr')
         return redirect(next_page)
     return render_template("login.html", form=form, active='login')
 
@@ -119,8 +117,8 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("index"))
-
+        return redirect(url_for("index_clr"))
+    
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         # u = User.query.filter_by(username=form.username.data).first()
@@ -213,7 +211,7 @@ def events(username: str):
 @login_required
 def event_add():
     form = EventForm(request.form)
-
+    
     if form.validate_on_submit():
         event = Event(
             title=form.title.data,
@@ -266,7 +264,7 @@ def event_buy(event_id: int):
     if buyer.balance() < event.price:
         flash("U dont have enough certs")
         return redirect(url_for("user_page", username=current_user.username))
-
+    
     transaction = Transaction()
     remains = event.price
     cert: Certificate
@@ -282,8 +280,7 @@ def event_buy(event_id: int):
 
     db.session.add(transaction)
     db.session.commit()
-
-    return redirect(url_for('events', username=seller.username))
+    return redirect(url_for("index"))
 
 
 @app.route("/transactions")
@@ -291,8 +288,8 @@ def event_buy(event_id: int):
 def transactions():
     trns_buyer = current_user.transactions_buyer
     trns_seller = current_user.transactions_seller
-
-    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller, user=current_user, active='profile', submenu='transactions')
+    
+    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller)
 
 
 @app.route('/dbg/profile')
