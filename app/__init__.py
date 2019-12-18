@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 heroku = Heroku(app)
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+# migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = "login"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -45,7 +45,7 @@ admin.add_view(ModelView(models.Transaction, db.session))
 admin.add_view(ModelView(models.Certificate, db.session))
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-from app import routes
+# from app import routes
 
 
 def generate_default_state():
