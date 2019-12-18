@@ -43,15 +43,16 @@
 								<div class="col-12 mb-3">
 									{{ form.about(class='form-control w-100', rows='10', cols='30', placeholder='Расскажите о себе') }}
 								</div>
+                            <div class="col-12 col-lg-4">
+					<img class="profile-pic mt-50" src="{{ current_user.profile_pic_url() }}" alt="">
+					{{ form.profile_picture }}
+	            </div>
 							</div>
 							{{ form.submit(class='btn amado-btn w-100') }}
 						</form>
 					</div>
 				</div>
-	            <div class="col-12 col-lg-4">
-					<img class="profile-pic mt-50" src="{{ current_user.profile_pic_url() }}" alt="">
-					{{ form.profile_picture }}
-	            </div>
+
 			</div>
 		</div>
 	</div>
