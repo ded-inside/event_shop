@@ -1,6 +1,7 @@
 from flask_login import login_user, current_user, login_required, logout_user
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
+from werkzeug.datastructures import FileStorage
 from werkzeug.urls import url_parse
 from wtforms import IntegerField
 from wtforms.fields.core import UnboundField
@@ -153,12 +154,18 @@ def uploaded_file(filename):
 @app.route("/edit/user", methods=["GET", "POST"])
 @login_required
 def user_edit():
-    form = UserEditForm(request.form)
+    form = UserEditForm()
+    # FileStorage(request)
     if form.validate_on_submit():
         if form.first_name.data:
             current_user.first_name = form.first_name.data
         if form.last_name.data:
             current_user.last_name = form.last_name.data
+        if form.about.data:
+            current_user.about = form.about.data
+        if form.job.data:
+            current_user.job = form.job.data
+        
         if form.profile_picture.data:
             if allowed_file(form.profile_picture.data.filename):
                 image_data = request.files[form.profile_picture.name].read()

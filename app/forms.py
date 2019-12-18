@@ -5,8 +5,8 @@ from wtforms import (StringField,
                      BooleanField,
                      SubmitField,
                      TextAreaField,
-                     FileField
-                     )
+                     FileField,
+                     Form)
 from wtforms.fields.html5 import (DateTimeField,
                                   IntegerField,
                                   DateField,
@@ -19,7 +19,6 @@ from wtforms.validators import (DataRequired,
                                 EqualTo,
                                 )
 
-from wtforms import *
 from app.models import *
 
 
