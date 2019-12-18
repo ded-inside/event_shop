@@ -1,11 +1,12 @@
 from flask_wtf import FlaskForm
+from flask_wtf.form import _Auto
 from wtforms import (StringField,
                      PasswordField,
                      BooleanField,
                      SubmitField,
                      TextAreaField,
-                     FileField
-                     )
+                     FileField,
+                     Form)
 from wtforms.fields.html5 import (DateTimeField,
                                   IntegerField,
                                   DateField,
@@ -18,7 +19,6 @@ from wtforms.validators import (DataRequired,
                                 EqualTo,
                                 )
 
-from wtforms import *
 from app.models import *
 
 
@@ -106,11 +106,7 @@ class AdminCertificatesEditForm(FlaskForm):
     max_certs = IntegerField("Maximum certificates", validators=[])
 
 
+
 class AdminUserEditForm(FlaskForm):
-    def __init__(self, user: User,  formdata=object(), **kwargs):
-        super(formdata=formdata, **kwargs)
-        self.user: User = user
-        self.certs = IntegerField("Certs", validators=[NumberRange(min=0, max=Certificate.available().count()+self.user.balance())])
-        
-    
+    certs = IntegerField("Certs", validators=[NumberRange(min=0, max=Certificate.available().count())])
     submit = SubmitField("Ok")

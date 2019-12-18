@@ -74,6 +74,12 @@ def admin_panel_user(username: str):
         if form.certs > user.balance():
             for i in range(form.certs - user.balance()):
                 cert = Certificate.available().first()
+                if cert is None:
+                    db.session.rollback()
+                    return render_template("admin_panel_user.html", certs={"available": certificates_available,
+                                                                           "unavailable": certificates_unavailable},
+                                           form=form, user=user)
+
                 user.certificates.append(cert)
         
         else:
@@ -82,10 +88,12 @@ def admin_panel_user(username: str):
                 user.certificates.remove(cert)
         
         db.session.commit()
-    
-    return render_template("admin_panel_user.html", certs={"available": certificates_avaliable,
-                                                           "unavailable": certificates_unavailable}, form=form,
-                           user=user)
+
+    certificates_available = Certificate.available().all()
+    certificates_unavailable = Certificate.unavailable().all()
+    return render_template("admin_panel_user.html", certs={"available": certificates_available,
+                                                           "unavailable": certificates_unavailable},
+                           form=form, user=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -143,24 +151,30 @@ def uploaded_file(filename):
 @app.route("/edit/user", methods=["GET", "POST"])
 @login_required
 def user_edit():
-    form = UserEditForm(request.form)
+    form = UserEditForm()
+    # FileStorage(request)
     if form.validate_on_submit():
         if form.first_name.data:
             current_user.first_name = form.first_name.data
         if form.last_name.data:
             current_user.last_name = form.last_name.data
+        if form.about.data:
+            current_user.about = form.about.data
+        if form.job.data:
+            current_user.job = form.job.data
+
         if form.profile_picture.data:
             if allowed_file(form.profile_picture.data.filename):
                 image_data = request.files[form.profile_picture.name].read()
                 filename = secure_filename(form.profile_picture.data.filename)
-                
+
                 open(os.path.join(os.getcwd(), "app", app.config['UPLOAD_FOLDER'], form.profile_picture.data.filename),
                      'wb').write(image_data)
                 current_user.profile_pic_filename = filename
-                db.session.commit()
-                return redirect(url_for('user_page',
-                                        username=current_user.username))
-    
+        db.session.commit()
+        return redirect(url_for('user_page',
+                                username=current_user.username))
+
     return render_template("edit_user.html", form=form)
 
 
@@ -241,7 +255,7 @@ def event_buy(event_id: int):
     event.buyer = buyer
     transaction._to = seller
     transaction._from = buyer
-    
+
     db.session.add(transaction)
     db.session.commit()
     return redirect(url_for("index"))
