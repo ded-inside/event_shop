@@ -6,8 +6,8 @@ from wtforms import (StringField,
                      SubmitField,
                      TextAreaField,
                      FileField,
-                     Form)
-from wtforms.fields.html5 import (DateTimeField,
+                     Form, DateTimeField)
+from wtforms.fields.html5 import (
                                   IntegerField,
                                   DateField,
                                   )
@@ -93,9 +93,9 @@ class EventForm(FlaskForm):
     about = TextAreaField("About")
 
     time_start = DateTimeField("Begins", validators=[DataRequired(
-        message="Поле обязательно для заполнения")])
+        message="Поле обязательно для заполнения")], format='%d.%m.%Y %H:%M')
     time_end = DateTimeField("Ends", validators=[DataRequired(
-        message="Поле обязательно для заполнения")])
+        message="Поле обязательно для заполнения")], format='%d.%m.%Y %H:%M')
 
     price = IntegerField("Cost", validators=[NumberRange(min=1)])
 
