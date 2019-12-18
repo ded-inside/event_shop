@@ -1,14 +1,18 @@
 from flask_login import login_user, current_user, login_required, logout_user
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
+from werkzeug.datastructures import FileStorage
 from werkzeug.urls import url_parse
+from wtforms import IntegerField
+from wtforms.fields.core import UnboundField
+from wtforms.validators import NumberRange
 
 from app import app, ALLOWED_EXTENSIONS
 from flask import request, flash, redirect, url_for, send_from_directory, render_template, abort
 from werkzeug.utils import secure_filename
 import os
 
-from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm
+from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm, AdminUserEditForm
 from app.models import *
 
 
@@ -26,7 +30,8 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(desc(Event.time_edited)).all()
+    users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(
+        desc(Event.time_edited)).all()
     return render_template("index.html", users=users_, active='main')
 
 
@@ -41,11 +46,56 @@ def logout():
 @login_required
 def admin_panel():
     if current_user.username != "Admin":
-        return redirect(url_for("user_page", username=current_user.username))
+        return abort(404)
+        # return redirect(url_for("user_page", username=current_user.username))
 
-    users_ = User.query.all()
+    users_ = User.query.filter(User.username != "Admin").all()
     trans_ = Transaction.query.all()
-    certs_ = Certificate.query.all()
+    # certs_ = Certificate.query.all()
+    certificates_available = Certificate.available().all()
+    certificates_unavailable = Certificate.unavailable().all()
+
+    return render_template("admin_panel_index.html", users=users_, trans=trans_,
+                           certs={"available": certificates_available,
+                                  "unavailable": certificates_unavailable})
+
+
+@app.route("/admin_panel/user/<username>", methods=["GET", "POST"])
+@login_required
+def admin_panel_user(username: str):
+    if current_user.username != "Admin":
+        return abort(404)
+        # return redirect(url_for("user_page", username=current_user.username))
+    user = User.query.filter(User.username == username).first_or_404()
+    form = AdminUserEditForm(request.form)
+
+    certificates_available = Certificate.available().all()
+    certificates_unavailable = Certificate.unavailable().all()
+
+    if form.validate_on_submit():
+        if form.certs.data > user.balance():
+            for i in range(form.certs.data - user.balance()):
+                cert = Certificate.available().first()
+                if cert is None:
+                    db.session.rollback()
+                    return render_template("admin_panel_user.html", certs={"available": certificates_available,
+                                                                           "unavailable": certificates_unavailable},
+                                           form=form, user=user)
+
+                user.certificates.append(cert)
+
+        else:
+            for i in range(user.balance() - form.certs.data):
+                cert = user.certificates[0]
+                user.certificates.remove(cert)
+
+        db.session.commit()
+
+    certificates_available = Certificate.available().all()
+    certificates_unavailable = Certificate.unavailable().all()
+    return render_template("admin_panel_user.html", certs={"available": certificates_available,
+                                                           "unavailable": certificates_unavailable},
+                           form=form, user=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -103,12 +153,18 @@ def uploaded_file(filename):
 @app.route("/edit/user", methods=["GET", "POST"])
 @login_required
 def user_edit():
-    form = UserEditForm(request.form)
+    form = UserEditForm()
+    # FileStorage(request)
     if form.validate_on_submit():
         if form.first_name.data:
             current_user.first_name = form.first_name.data
         if form.last_name.data:
             current_user.last_name = form.last_name.data
+        if form.about.data:
+            current_user.about = form.about.data
+        if form.job.data:
+            current_user.job = form.job.data
+
         if form.profile_picture.data:
             if allowed_file(form.profile_picture.data.filename):
                 image_data = request.files[form.profile_picture.name].read()
@@ -129,7 +185,8 @@ def user_page(username: str):
     if username == "Admin":
         abort(404)
     user = User.query.filter_by(username=username).options(joinedload("events_host")).first_or_404()
-    return render_template("profile.html", user=user, submenu='main', active='profile' if user == current_user else None)
+    return render_template("profile.html", user=user, submenu='main',
+                           active='profile' if user == current_user else None)
 
 
 @app.route("/users")
@@ -145,10 +202,11 @@ def event_page(event_id: int):
 
 
 @app.route('/user/<username>/events')
-def events(username :str):
-	_user = User.query.filter(User.username == username).first();
-	_events = Event.query.filter(Event.seller_id == _user.id);
-	return render_template('events.html', events=_events, user=_user, submenu='shedule', active='profile' if _user == current_user else None)
+def events(username: str):
+    _user = User.query.filter(User.username == username).first();
+    _events = Event.query.filter(Event.seller_id == _user.id);
+    return render_template('events.html', events=_events, user=_user, submenu='shedule',
+                           active='profile' if _user == current_user else None)
 
 
 @app.route("/event/add", methods=["GET", "POST"])
@@ -177,7 +235,7 @@ def event_add():
 def event_buy(event_id: int):
     event = Event.query.get_or_404(event_id)
     seller = event.seller
-    buyer: User = User.query.get(current_user.id)
+    buyer: User = current_user
     if event.buyer:
         return redirect(url_for("user_page", username=seller.username))
     if buyer == seller:

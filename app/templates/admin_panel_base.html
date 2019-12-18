@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    In Use/All <br> {{ certs.unavailable | length }} / {{ certs.available|length + certs.unavailable|length }}<br>
+
+    {% block admin_content%}
+
+    {% endblock %}
+
+{% endblock %}
