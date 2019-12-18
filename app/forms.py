@@ -93,9 +93,9 @@ class EventForm(FlaskForm):
     about = TextAreaField("About")
 
     time_start = DateTimeField("Begins", validators=[DataRequired(
-        message="Поле обязательно для заполнения")], format='%d.%m.%Y %H:%M')
+        message="Поле обязательно для заполнения")], format='%Y-%m-%dT%H:%M')
     time_end = DateTimeField("Ends", validators=[DataRequired(
-        message="Поле обязательно для заполнения")], format='%d.%m.%Y %H:%M')
+        message="Поле обязательно для заполнения")], format='%Y-%m-%dT%H:%M')
 
     price = IntegerField("Cost", validators=[NumberRange(min=1)])
 
