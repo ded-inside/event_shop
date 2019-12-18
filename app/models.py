@@ -91,7 +91,8 @@ class Event(TimestampMixin, db.Model):
         fname = "pechka.jpg"
         if self.pic_filename:
             fname = self.pic_filename
-        return url_for("uploaded_file", filename=fname)
+        return "https://superawesomevectors.com/wp-content/uploads/2017/09/calendar-outline-free-vector-icon-thumb-275x195.jpg"
+        # return url_for("uploaded_file", filename=fname)
     
     price = db.Column(db.Integer, nullable=False, default=0)
     
