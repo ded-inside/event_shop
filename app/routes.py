@@ -177,7 +177,7 @@ def user_edit():
         return redirect(url_for('user_page',
                                 username=current_user.username))
 
-    return render_template("edit_user.html", form=form)
+    return render_template("edit_user.html", form=form, user=current_user, active='profile', submenu='main')
 
 
 @app.route("/user/<username>")
@@ -226,8 +226,30 @@ def event_add():
         )
         current_user.events_host.append(event)
         db.session.commit()
-        return redirect(url_for("users"))
-    return render_template("event_add.html", form=form)
+        return redirect(url_for("event_add"))
+    return render_template("event_add.html", form=form, user=current_user, active='profile', submenu='shedule')
+
+
+@app.route('/event/<event_id>/edit', methods=['GET', 'POST'])
+@login_required
+def event_edit(event_id :int):
+    form = EventForm(request.form)
+
+    if form.validate_on_submit():
+        event = Event(
+            title=form.title.data,
+            about=form.about.data,
+            price=form.price.data,
+            time_start=form.time_start.data,
+            time_end=form.time_end.data,
+            time_created=datetime.utcnow(),
+            time_edited=datetime.utcnow()
+        )
+    # TODO: editing not adding new
+        current_user.events_host.append(event)
+        db.session.commit()
+        return redirect(url_for("event_edit"))
+    return render_template("event_edit.html", form=form, user=current_user, active='profile', submenu='shedule')
 
 
 @app.route("/buy/event/<event_id>")

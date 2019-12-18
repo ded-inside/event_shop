@@ -28,13 +28,14 @@
                         </thead>
                         <tbody>
 							{% for event in events %}
-								{{ macro.card_event(event) }}
+								{{ macro.card_event(user, event) }}
 							{% endfor %}
                         </tbody>
                     </table>
 					{% if not events %}
 					<p>Упс! Похоже здесь нет событий!</p>
 					{% endif %}
+					<a href="{{ url_for('event_add') }}"><button class="btn amado-btn w-100" name="button">Создать</button></a>
                 </div>
             </div>
         </div>

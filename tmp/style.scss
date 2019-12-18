@@ -788,13 +788,13 @@ img {
     .cart-table-area {
         position: relative;
         z-index: 1;
-        @include flex(0 0 calc(100% - 350px));
-        width: calc(100% - 350px);
-        max-width: calc(100% - 350px);
+        @include flex(0 0 calc(100% - 550px));
+        width: calc(100% - 550px);
+        max-width: calc(100% - 550px);
         @media #{$breakpoint-lg} {
-            @include flex(0 0 calc(100% - 350px));
-            width: calc(100% - 350px);
-            max-width: calc(100% - 350px);
+            @include flex(0 0 calc(100% - 550px));
+            width: calc(100% - 550px);
+            max-width: calc(100% - 550px);
         }
         @media #{$breakpoint-md} {
             @include flex(0 0 calc(100% - 460px));

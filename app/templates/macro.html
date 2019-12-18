@@ -16,7 +16,7 @@
     </div>
 {% endmacro %}
 
-{% macro card_event(event) %}
+{% macro card_event(current_user, event) %}
 	<tr>
 		<td class="cart_product_img">
 			<a href="#"><img src="{{ event.pic_url() }}"></a>
@@ -33,6 +33,8 @@
 		<td>
 			{% if event.buyer_id %}
 			<a class="btn amado-btn active" style="color: #fff;">Куплено</a>
+			{% elif event.seller_id == current_user.id %}
+			<a class="btn amado-btn" href="{{ url_for('event_edit', event_id=event.id) }}">Редактировать</a>
 			{% else %}
 			<a class="btn amado-btn" href="{{ url_for('event_buy', event_id=event.id) }}">Купить</a>
 			{% endif %}
