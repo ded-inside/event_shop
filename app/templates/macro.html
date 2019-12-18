@@ -31,9 +31,9 @@
 			<span>{{ event.time_start }} -<br>{{ event.time_end }}</span>
 		</td>
 		<td>
-			{% if event.buyer_id %}
+			{% if event.buyer %}
 			<a class="btn amado-btn active" style="color: #fff;">Куплено</a>
-			{% elif event.seller_id == current_user.id %}
+			{% elif event.seller == current_user %}
 			<a class="btn amado-btn" href="{{ url_for('event_edit', event_id=event.id) }}">Редактировать</a>
 			{% else %}
 			<a class="btn amado-btn" href="{{ url_for('event_buy', event_id=event.id) }}">Купить</a>

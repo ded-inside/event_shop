@@ -28,7 +28,7 @@
                         </thead>
                         <tbody>
 							{% for event in events %}
-								{{ macro.card_event(user, event) }}
+								{{ macro.card_event(current_user, event) }}
 							{% endfor %}
                         </tbody>
                     </table>

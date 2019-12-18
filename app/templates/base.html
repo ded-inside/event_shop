@@ -51,9 +51,15 @@
 						<a href="{{ url_for('index') }}">Главная</a>
 					</li>
 					{% if current_user.is_authenticated %}
+					{% if current_user.id == 1 %}
+					<li {% if active == 'profile' %} class="active" {% endif %}>
+						<a href="{{ url_for('admin_panel') }}">Панель управления</a>
+					</li>
+					{% else %}
 					<li {% if active == 'profile' %} class="active" {% endif %}>
 						<a href="{{ url_for('user_page', username=current_user.username) }}">Личный кабинет</a>
 					</li>
+					{% endif %}
 					<li>
 						<a href="{{ url_for('logout') }}">Выйти</a>
 					</li>
@@ -70,8 +76,9 @@
 			{% if current_user.is_authenticated %}
 			<div style="height: 70px;"></div>
 			<div class="amado-btn-group mt-30 mb-100">
+				{% if current_user.id != 1 %}
 				<a href="#" class="btn amado-btn mb-15">Баланс: {{ current_user.balance() }}</a>
-				<!-- <a href="#" class="btn amado-btn active">New this week</a> -->
+				{% endif %}
 			</div>
 			{% endif %}
 			<!-- <div class="cart-fav-search mb-70">

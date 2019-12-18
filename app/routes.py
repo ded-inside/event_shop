@@ -217,8 +217,8 @@ def event_page(event_id: int):
 
 @app.route('/user/<username>/events')
 def events(username: str):
-    _user = User.query.filter(User.username == username).first();
-    _events = Event.query.filter(Event.seller_id == _user.id);
+    _user = User.query.filter(User.username == username).first_or_404()
+    _events = Event.query.filter(Event.seller_id == _user.id)
     return render_template('events.html', events=_events, user=_user, submenu='shedule',
                            active='profile' if _user == current_user else None)
 

@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
+{% block title %}Панель управления{% endblock %}
+
 {% block content %}
     In Use/All <br> {{ certs.unavailable | length }} / {{ certs.available|length + certs.unavailable|length }}<br>
 
-    {% block admin_content%}
+    {% block admin_content %}
 
     {% endblock %}
 
