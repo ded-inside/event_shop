@@ -4,4 +4,3 @@ app.db
 *.pyc
 settings.json
 .venv
-migrations
