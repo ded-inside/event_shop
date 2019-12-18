@@ -12,7 +12,7 @@ UPLOAD_FOLDER = r"static/uploads"
 
 app = Flask(__name__)
 app.config.from_object(Config)
-heroku = Heroku(app)
+# heroku = Heroku(app)
 db = SQLAlchemy(app)
 # migrate = Migrate(app, db)
 login = LoginManager(app)
