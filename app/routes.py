@@ -226,7 +226,7 @@ def events(username: str):
 @app.route("/event/add", methods=["GET", "POST"])
 @login_required
 def event_add():
-    form = EventForm(request.form)
+    form = EventForm()
     
     if form.validate_on_submit():
         event = Event(
