@@ -45,7 +45,7 @@ admin.add_view(ModelView(models.Transaction, db.session))
 admin.add_view(ModelView(models.Certificate, db.session))
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-# from app import routes
+from app import routes
 
 
 def generate_default_state():
