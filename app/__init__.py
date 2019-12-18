@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 
-from test_config import Config
+from config import Config
 
 UPLOAD_FOLDER = r"static/uploads"
 
