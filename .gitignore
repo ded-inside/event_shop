@@ -1,8 +1,6 @@
 .idea
-config.py
 venv
 app.db
 *.pyc
 settings.json
 .venv
-migrations

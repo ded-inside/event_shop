@@ -2,11 +2,18 @@
 
 {% block admin_content %}
     <br>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ form.max_certs.label }}<br>
+        {{ form.max_certs }}<br>
+        {{ form.submit() }}<br>
+    </form>
+
     {% for user in users %}
         username: {{ user.username }}<br>
         name: {{ user.full_name() }}<br>
         balance: {{ user.balance() }}<br>
-        <a href="{{ url_for("user_page", username=user.username) }}">user page</a><br><br>
+        <a href="{{ url_for("admin_panel_user", username=user.username) }}">user page</a><br><br>
     {% endfor %}
 
 {% endblock %}
