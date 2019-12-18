@@ -72,3 +72,10 @@
 		</td>
 	</tr>
 {% endmacro %}
+
+{% macro admin_card_user(user) %}
+	username: {{ user.username }}<br>
+	name: {{ user.full_name() }}<br>
+	balance: {{ user.balance() }}<br>
+	<a href="{{ url_for("admin_panel_user", username=user.username) }}">user page</a>
+{% endmacro %}

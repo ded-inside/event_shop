@@ -3,10 +3,10 @@
 {% block title %}Панель управления{% endblock %}
 
 {% block content %}
-    In Use/All <br> {{ certs.unavailable | length }} / {{ certs.available|length + certs.unavailable|length }}<br>
+	<div style='padding: 10px;'>
+    	In Use/All <br> {{ certs.unavailable | length }} / {{ certs.available|length + certs.unavailable|length }}<br>
+	</div>
 
-    {% block admin_content %}
-
-    {% endblock %}
+    {% block admin_content %}{% endblock %}
 
 {% endblock %}

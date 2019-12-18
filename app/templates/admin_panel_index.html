@@ -1,19 +1,21 @@
+{% import 'macro.html' as macro %}
+
 {% extends "admin_panel_base.html" %}
 
 {% block admin_content %}
-    <br>
-    <form action="" method="post" novalidate>
+    <form style='padding: 10px;' action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         {{ form.max_certs.label }}<br>
         {{ form.max_certs }}<br>
-        {{ form.submit() }}<br>
+        {{ form.submit() }}
     </form>
 
-    {% for user in users %}
-        username: {{ user.username }}<br>
-        name: {{ user.full_name() }}<br>
-        balance: {{ user.balance() }}<br>
-        <a href="{{ url_for("admin_panel_user", username=user.username) }}">user page</a><br><br>
-    {% endfor %}
+	<div style='display: flex;'>
+	    {% for user in users %}
+		<div style='padding: 10px;'>
+			{{ macro.admin_card_user(user) }}
+		</div>
+	    {% endfor %}
+	</div>
 
 {% endblock %}

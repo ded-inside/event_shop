@@ -1,17 +1,17 @@
+{% import 'macro.html' as macro %}
+
 {% extends "admin_panel_base.html" %}
 
 {% block admin_content %}
     <div>
-        <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}<br>
+        <form style='padding: 10px;' action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
             {{ form.certs.label }}<br>
             {{ form.certs }}
             {{ form.submit }}<br>
         </form>
-        <br>
-        username: {{ user.username }}<br>
-        name: {{ user.full_name() }}<br>
-        balance: {{ user.balance() }}<br>
-        <a href="{{ url_for("user_page", username=user.username) }}">user page</a>
+		<div class="">
+			{{ macro.admin_card_user(user) }}
+		</div>
     </div>
 {% endblock %}
