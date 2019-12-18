@@ -67,7 +67,7 @@ def admin_panel_user(username: str):
     form = AdminUserEditForm()
     form.user = user
     
-    certificates_avaliable = Certificate.available().all()
+    certificates_available = Certificate.available().all()
     certificates_unavailable = Certificate.unavailable().all()
     
     if form.validate_on_submit():
