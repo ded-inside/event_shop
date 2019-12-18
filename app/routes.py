@@ -8,7 +8,7 @@ from flask import request, flash, redirect, url_for, send_from_directory, render
 from werkzeug.utils import secure_filename
 import os
 
-from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm, AdminUserEditForm
+from app.forms import LoginForm, RegisterForm, UserEditForm, EventForm, AdminUserEditForm, AdminCertificatesEditForm
 from app.models import *
 
 
@@ -39,12 +39,28 @@ def logout():
     return redirect(url_for("index_clr"))
 
 
-@app.route("/admin_panel")
+@app.route("/admin_panel", methods=["POST", "GET"])
 @login_required
 def admin_panel():
     if current_user.username != "Admin":
         return abort(404)
         # return redirect(url_for("user_page", username=current_user.username))
+    
+    form = AdminCertificatesEditForm()
+    
+    if form.validate_on_submit():
+        if form.max_certs.data < Certificate.available().count()+Certificate.unavailable().count():
+            for i in range(Certificate.available().count()+Certificate.unavailable().count() - form.max_certs.data):
+                cert = Certificate.available().first()
+                if cert is None:
+                    db.session.rollback()
+                    break
+                db.session.delete(cert)
+        else:
+            for i in range(form.max_certs.data - (Certificate.available().count()+Certificate.unavailable().count())):
+                cert = Certificate()
+                db.session.add(cert)
+        db.session.commit()
     
     users_ = User.query.filter(User.username != "Admin").all()
     trans_ = Transaction.query.all()
@@ -54,10 +70,10 @@ def admin_panel():
     
     return render_template("admin_panel_index.html", users=users_, trans=trans_,
                            certs={"available": certificates_available,
-                                  "unavailable": certificates_unavailable})
+                                  "unavailable": certificates_unavailable}, form=form)
 
 
-@app.route("/admin_panel/user/<username>")
+@app.route("/admin_panel/user/<username>", methods=["GET", "POST"])
 @login_required
 def admin_panel_user(username: str):
     if current_user.username != "Admin":
@@ -71,8 +87,8 @@ def admin_panel_user(username: str):
     certificates_unavailable = Certificate.unavailable().all()
     
     if form.validate_on_submit():
-        if form.certs > user.balance():
-            for i in range(form.certs - user.balance()):
+        if form.certs.data > user.balance():
+            for i in range(form.certs.data - user.balance()):
                 cert = Certificate.available().first()
                 if cert is None:
                     db.session.rollback()
@@ -83,7 +99,7 @@ def admin_panel_user(username: str):
                 user.certificates.append(cert)
         
         else:
-            for i in range(user.balance() - form.certs):
+            for i in range(user.balance() - form.certs.data):
                 cert = user.certificates[0]
                 user.certificates.remove(cert)
         

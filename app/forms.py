@@ -104,9 +104,9 @@ class EventForm(FlaskForm):
 
 class AdminCertificatesEditForm(FlaskForm):
     max_certs = IntegerField("Maximum certificates", validators=[])
-
+    submit = SubmitField("Ok")
 
 
 class AdminUserEditForm(FlaskForm):
-    certs = IntegerField("Certs", validators=[NumberRange(min=0, max=Certificate.available().count())])
+    certs = IntegerField("Certs", validators=[NumberRange(min=0)])
     submit = SubmitField("Ok")
