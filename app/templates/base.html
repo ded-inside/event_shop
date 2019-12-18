@@ -48,7 +48,7 @@
 			<nav class="amado-nav">
 				<ul>
 					<li {% if active == 'main' %} class="active" {% endif %}>
-						<a href="{{ url_for('index_clr') }}">Главная</a>
+						<a href="{{ url_for('index') }}">Главная</a>
 					</li>
 					{% if current_user.is_authenticated %}
 					<li {% if active == 'profile' %} class="active" {% endif %}>
@@ -99,7 +99,7 @@
 				<div class="col-12 col-lg-4">
 					<div class="single_widget_area">
 						<div class="footer-logo" style="margin-right: 100px;">
-							<a href="{{ url_for('index_clr') }}"><img src="{{ url_for('static', filename='img/core-img/logo2.png') }}" alt=""></a>
+							<a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/core-img/logo2.png') }}" alt=""></a>
 						</div>
 					</div>
 				</div>

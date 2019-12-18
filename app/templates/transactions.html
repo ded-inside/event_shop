@@ -1,24 +1,38 @@
-{% extends "base.html" %}
+{% extends "sidebar.html" %}
+
+{% block title %}Транзакции{% endblock %}
 
 {% block content %}
-    <h1>Sell</h1>
-    <ul>
-        {% for trns in trns_seller %}
-            <li>
-                {{ trns.time_created }}<br>
-                {{ trns._from }}<br>
-                {{ trns.amount() }}
-            </li>
-        {% endfor %}
-    </ul>
-    <h1>Buy</h1>
-    <ul>
-        {% for trns in trns_buyer %}
-            <li>
-                {{ trns.time_created }}<br>
-                {{ trns._to }}<br>
-                {{ trns.amount() }}
-            </li>
-        {% endfor %}
-    </ul>
+
+{{ super() }}
+
+<div class="cart-table-area section-padding-100">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="cart-title mt-50">
+                    <h2>Транзакции</h2>
+                </div>
+                <div class="cart-table">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Стоимость</th>
+                                <th>Создание</th>
+                                <th></th>
+                                <th>Покупка</th>
+								<th>"Соучастник"</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+							{% for transaction in (trns_seller|list + trns_buyer|list)|sort(attribute='time_edited') %}
+							{{ macro.card_transaction(current_user, transaction) }}
+							{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

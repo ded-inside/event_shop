@@ -7,10 +7,10 @@
 	{{ super() }}
 
 	<div class="cart-table-area section-padding-100">
-		<div class="container-fluid">
-			<div class="row">
+		<div class="container-fluid checkout_details_area">
+			<form class="row" action="{{ url_for('user_edit') }}" method="post" enctype="multipart/form-data" novalidate>
 				<div class="col-12 col-lg-8">
-					<div class="checkout_details_area mt-50">
+					<div class="mt-50">
 						<div class="cart-title">
 							<h2>Редактирование профиля</h2>
 						</div>
@@ -19,7 +19,7 @@
 						<p>{{ message }}</p>
 						{% endfor %}
 						{% endwith %}
-						<form action="{{ url_for('user_edit') }}" method="post" enctype="multipart/form-data" novalidate>
+						<div>
 							{{ form.hidden_tag() }}
 							<div class="row">
 								<div class="col-md-6 mb-3">
@@ -43,17 +43,16 @@
 								<div class="col-12 mb-3">
 									{{ form.about(class='form-control w-100', rows='10', cols='30', placeholder='Расскажите о себе') }}
 								</div>
-                            <div class="col-12 col-lg-4">
+							</div>
+							{{ form.submit(class='btn amado-btn w-100') }}
+						</div>
+					</div>
+				</div>
+	            <div class="col-12 col-lg-4">
 					<img class="profile-pic mt-50" src="{{ current_user.profile_pic_url() }}" alt="">
 					{{ form.profile_picture }}
 	            </div>
-							</div>
-							{{ form.submit(class='btn amado-btn w-100') }}
-						</form>
-					</div>
-				</div>
-
-			</div>
+			</form>
 		</div>
 	</div>
 {% endblock %}
