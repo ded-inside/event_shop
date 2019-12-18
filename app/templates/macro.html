@@ -18,8 +18,8 @@
 
 {% macro card_event(current_user, event) %}
 	<tr>
-		<td class="cart_product_img">
-			<a href="#"><img src="{{ event.pic_url() }}"></a>
+		<td>
+			<p>{{ event.about }}</p>
 		</td>
 		<td class="cart_product_desc">
 			<h5>{{ event.title }}</h5>

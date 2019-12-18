@@ -52,7 +52,7 @@
 					</li>
 					{% if current_user.is_authenticated %}
 					{% if current_user.id == 1 %}
-					<li {% if active == 'profile' %} class="active" {% endif %}>
+					<li {% if active == 'admin_panel' %} class="active" {% endif %}>
 						<a href="{{ url_for('admin_panel') }}">Панель управления</a>
 					</li>
 					{% else %}
@@ -121,17 +121,23 @@
 											<a class="nav-link" href="{{ url_for('index') }}">Главная</a>
 										</li>
 										{% if current_user.is_authenticated %}
-										<li class="nav-item {% if active == 'profile' %} class="active" {% endif %}">
+										{% if current_user.id == 1 %}
+										<li class="nav-item {% if active == 'admin_panel' %} active {% endif %}">
+											<a class="nav-link" href="{{ url_for('admin_panel') }}">Панель управления</a>
+										</li>
+										{% else %}
+										<li class="nav-item {% if active == 'profile' %} active {% endif %}">
 											<a class="nav-link" href="{{ url_for('user_page', username=current_user.username) }}">Личный кабинет</a>
 										</li>
+										{% endif %}
 										<li class="nav-item">
 											<a class="nav-link" href="{{ url_for('logout') }}">Выйти</a>
 										</li>
 										{% else %}
-										<li class="nav-item {% if active == 'register' %} class="active" {% endif %}">
+										<li class="nav-item {% if active == 'register' %} active {% endif %}">
 											<a class="nav-link" href="{{ url_for('register') }}">Регистрация</a>
 										</li>
-										<li class="nav-item {% if active == 'login' %} class="active" {% endif %}">
+										<li class="nav-item {% if active == 'login' %} active {% endif %}">
 											<a class="nav-link" href="{{ url_for('login') }}">Войти</a>
 										</li>
 										{% endif %}
