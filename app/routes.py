@@ -24,8 +24,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/', endpoint="index_clr")
-@app.route("/index")
+@app.route('/')
 def index():
     users_ = User.query.filter(User.username != "Admin").outerjoin(User.events_host).order_by(desc(Event.time_edited)).all()
     return render_template("index.html", users=users_, active='main')
@@ -35,7 +34,7 @@ def index():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("index_clr"))
+    return redirect(url_for("index"))
 
 
 @app.route("/admin_panel")
@@ -52,7 +51,7 @@ def admin_panel():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("index_clr"))
+        return redirect(url_for("index"))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -62,7 +61,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index_clr')
+            next_page = url_for('index')
         return redirect(next_page)
     return render_template("login.html", form=form, active='login')
 
@@ -70,7 +69,7 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("index_clr"))
+        return redirect(url_for("index"))
 
     form = RegisterForm(request.form)
     if form.validate_on_submit():
@@ -203,7 +202,8 @@ def event_buy(event_id: int):
 
     db.session.add(transaction)
     db.session.commit()
-    return redirect(url_for("index"))
+
+    return redirect(url_for('events', username=seller.username))
 
 
 @app.route("/transactions")
@@ -212,7 +212,7 @@ def transactions():
     trns_buyer = current_user.transactions_buyer
     trns_seller = current_user.transactions_seller
 
-    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller)
+    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller, user=current_user, active='profile', submenu='transactions')
 
 
 @app.route('/dbg/profile')

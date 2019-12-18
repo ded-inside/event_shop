@@ -27,7 +27,46 @@
 		<td class="price">
 			<span>{{ event.price }} certs</span>
 		</td>
-		<!-- TODO add time column -->
-		<td></td>
+		<td>
+			<span>{{ event.time_start }} -<br>{{ event.time_end }}</span>
+		</td>
+		<td>
+			{% if event.buyer_id %}
+			<a class="btn amado-btn active" style="color: #fff;">Куплено</a>
+			{% else %}
+			<a class="btn amado-btn" href="{{ url_for('event_buy', event_id=event.id) }}">Купить</a>
+			{% endif %}
+		</td>
+	</tr>
+{% endmacro %}
+
+{% macro card_transaction(current_user, transaction) %}
+	{% set is_seller = current_user.id == transaction._from_id %}
+
+	<tr {% if is_seller %}style='background-color: #ecedf3;'{% endif %}>
+		<td>
+			<span>{{ transaction.amount() }}</span>
+		</td>
+		<td>
+			<span>{{ transaction.time_created }}</span>
+		</td>
+		<td>
+			{% if is_seller %}
+			<img src="{{ url_for('static', filename='img/core-img/arrowRight.png') }}" style="background-color: transparent; width: 80px; height: 80px;">
+			{% else %}
+			<img src="{{ url_for('static', filename='img/core-img/arrowLeft.png') }}" style="background-color: transparent; width: 80px; height: 80px;">
+			{% endif %}
+		</td>
+		<td>
+			<span>{{ transaction.time_edited }}</span>
+		</td>
+		<td>
+			<!-- TODO user pic -->
+			{% if is_seller %}
+			<span>{{ transaction._to_id }}</span>
+			{% else %}
+			<span>{{ transaction._from_id }}</span>
+			{% endif %}
+		</td>
 	</tr>
 {% endmacro %}
