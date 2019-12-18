@@ -45,9 +45,9 @@ def admin_panel():
     if current_user.username != "Admin":
         return abort(404)
         # return redirect(url_for("user_page", username=current_user.username))
-    
+
     form = AdminCertificatesEditForm()
-    
+
     if form.validate_on_submit():
         if form.max_certs.data < Certificate.available().count()+Certificate.unavailable().count():
             for i in range(Certificate.available().count()+Certificate.unavailable().count() - form.max_certs.data):
@@ -61,13 +61,13 @@ def admin_panel():
                 cert = Certificate()
                 db.session.add(cert)
         db.session.commit()
-    
+
     users_ = User.query.filter(User.username != "Admin").all()
     trans_ = Transaction.query.all()
     # certs_ = Certificate.query.all()
     certificates_available = Certificate.available().all()
     certificates_unavailable = Certificate.unavailable().all()
-    
+
     return render_template("admin_panel_index.html", users=users_, trans=trans_,
                            certs={"available": certificates_available,
                                   "unavailable": certificates_unavailable}, form=form)
@@ -82,10 +82,10 @@ def admin_panel_user(username: str):
     user = User.query.filter(User.username == username).first_or_404()
     form = AdminUserEditForm()
     form.user = user
-    
+
     certificates_available = Certificate.available().all()
     certificates_unavailable = Certificate.unavailable().all()
-    
+
     if form.validate_on_submit():
         if form.certs.data > user.balance():
             for i in range(form.certs.data - user.balance()):
@@ -97,12 +97,12 @@ def admin_panel_user(username: str):
                                            form=form, user=user)
 
                 user.certificates.append(cert)
-        
+
         else:
             for i in range(user.balance() - form.certs.data):
                 cert = user.certificates[0]
                 user.certificates.remove(cert)
-        
+
         db.session.commit()
 
     certificates_available = Certificate.available().all()
@@ -134,7 +134,7 @@ def login():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("index_clr"))
-    
+
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         # u = User.query.filter_by(username=form.username.data).first()
@@ -227,7 +227,7 @@ def events(username: str):
 @login_required
 def event_add():
     form = EventForm(request.form)
-    
+
     if form.validate_on_submit():
         event = Event(
             title=form.title.data,
@@ -280,7 +280,7 @@ def event_buy(event_id: int):
     if buyer.balance() < event.price:
         flash("U dont have enough certs")
         return redirect(url_for("user_page", username=current_user.username))
-    
+
     transaction = Transaction()
     remains = event.price
     cert: Certificate
@@ -304,8 +304,8 @@ def event_buy(event_id: int):
 def transactions():
     trns_buyer = current_user.transactions_buyer
     trns_seller = current_user.transactions_seller
-    
-    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller)
+
+    return render_template("transactions.html", trns_buyer=trns_buyer, trns_seller=trns_seller, active='profile', submenu='transactions', user=current_user)
 
 
 @app.route('/dbg/profile')
