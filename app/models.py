@@ -27,9 +27,9 @@ class User(UserMixin, TimestampMixin, db.Model):
 
     def profile_pic_url(self):
         if self.profile_pic_filename:
-			return self.profile_pic_filename
-		else:
-			return 'https://x.kinja-static.com/assets/images/logos/placeholders/default.png'
+    return self.profile_pic_filename
+    else:
+    return 'https://x.kinja-static.com/assets/images/logos/placeholders/default.png'
         #     return url_for('uploaded_file', filename=self.profile_pic_filename)
         # else:
         #     return url_for('uploaded_file', filename='default.jpg')
